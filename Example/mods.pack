@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Mods>
+    <ModItem FriendlyName="Text HUD API">
+        <Name>758597413.sbm</Name>
+        <PublishedFileId>758597413</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Rich HUD Master">
+        <Name>1965654081.sbm</Name>
+        <PublishedFileId>1965654081</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Midspace's Configurable Max Ship Speed Mod [EOL]">
+        <Name>599536562.sbm</Name>
+        <PublishedFileId>599536562</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Proper Hydrogen Rebalance">
+        <Name>824486353.sbm</Name>
+        <PublishedFileId>824486353</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="BluKat's LWTS Jump Drive Inhibitor">
+        <Name>2662208010.sbm</Name>
+        <PublishedFileId>2662208010</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="[v6.5.9] Lord Wiader's Tiered Systems - LWTS (KptKosmit91's Tiered Systems/Tiered Everything)">
+        <Name>691529112.sbm</Name>
+        <PublishedFileId>691529112</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="FSZ - Faction Safe Zones ~Updated 12/23/19~">
+        <Name>1507368483.sbm</Name>
+        <PublishedFileId>1507368483</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="BluKat's Sound Block and Faction Logo Mod">
+        <Name>2654593311.sbm</Name>
+        <PublishedFileId>2654593311</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="BluKat's LWTS ReBuffed Ore Detectors">
+        <Name>2662891149.sbm</Name>
+        <PublishedFileId>2662891149</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="BuildInfo (extra block+terminal info, air leak finder)">
+        <Name>514062285.sbm</Name>
+        <PublishedFileId>514062285</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="HUD Compass">
+        <Name>1469072169.sbm</Name>
+        <PublishedFileId>1469072169</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Edge Be Gone! (No armor edges)">
+        <Name>2042716312.sbm</Name>
+        <PublishedFileId>2042716312</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Norca Engineers HUD - Coloured - 1.197">
+        <Name>1682356734.sbm</Name>
+        <PublishedFileId>1682356734</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Screen Gunk Be Gone!">
+        <Name>1289657379.sbm</Name>
+        <PublishedFileId>1289657379</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Sequence Nebula - SD">
+        <Name>2223671641.sbm</Name>
+        <PublishedFileId>2223671641</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Colorful Icons">
+        <Name>801185519.sbm</Name>
+        <PublishedFileId>801185519</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Sneaky Sounds - Quieter Tools">
+        <Name>1662953858.sbm</Name>
+        <PublishedFileId>1662953858</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Build Vision 2.5">
+        <Name>1697184408.sbm</Name>
+        <PublishedFileId>1697184408</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Autofill Bottles">
+        <Name>2308085590.sbm</Name>
+        <PublishedFileId>2308085590</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Whip's Camera Overlay">
+        <Name>704012607.sbm</Name>
+        <PublishedFileId>704012607</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="EZGPS - A Better way to Navigate in Space">
+        <Name>1480940163.sbm</Name>
+        <PublishedFileId>1480940163</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Clean Assembler Tab">
+        <Name>2115568523.sbm</Name>
+        <PublishedFileId>2115568523</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Camera Panning - rotate camera view (+reset 1st person character view)">
+        <Name>806331071.sbm</Name>
+        <PublishedFileId>806331071</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="[VSI] Recolorable Thrusters">
+        <Name>1354870812.sbm</Name>
+        <PublishedFileId>1354870812</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Rotary Airlock">
+        <Name>1359954841.sbm</Name>
+        <PublishedFileId>1359954841</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Conveyor Air Vent - full sized block (and slope!)">
+        <Name>410678202.sbm</Name>
+        <PublishedFileId>410678202</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="MA Spotlight pack">
+        <Name>1881158066.sbm</Name>
+        <PublishedFileId>1881158066</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="[SERVER] Gravel Sifter">
+        <Name>2474017247.sbm</Name>
+        <PublishedFileId>2474017247</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="AQD - Armor Expansion">
+        <Name>1939935505.sbm</Name>
+        <PublishedFileId>1939935505</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="PassageIntersections">
+        <Name>946724937.sbm</Name>
+        <PublishedFileId>946724937</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="AQD - Conveyor Expansion">
+        <Name>1864380341.sbm</Name>
+        <PublishedFileId>1864380341</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Nanobot Build and Repair System">
+        <Name>857053359.sbm</Name>
+        <PublishedFileId>857053359</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Grated Catwalks Expansion">
+        <Name>2503712170.sbm</Name>
+        <PublishedFileId>2503712170</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="MA Pole Parts">
+        <Name>2302105467.sbm</Name>
+        <PublishedFileId>2302105467</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="More Wind Turbines (Update)">
+        <Name>1728125712.sbm</Name>
+        <PublishedFileId>1728125712</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="WeaponCore - 2.0(30)">
+        <Name>1918681825.sbm</Name>
+        <PublishedFileId>1918681825</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Defense Shields - v2.0(37)">
+        <Name>1365616918.sbm</Name>
+        <PublishedFileId>1365616918</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="[Mexpex] MWI - Weapon Collection 1 [WeaponCore](19)">
+        <Name>1920388300.sbm</Name>
+        <PublishedFileId>1920388300</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Halo UNSC Ship Weapons (WeaponCore)">
+        <Name>2286546132.sbm</Name>
+        <PublishedFileId>2286546132</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Modular Encounters Systems">
+        <Name>1521905890.sbm</Name>
+        <PublishedFileId>1521905890</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Perpetually Perturbed Pirates">
+        <Name>1992435623.sbm</Name>
+        <PublishedFileId>1992435623</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Surface Occupation">
+        <Name>1135484957.sbm</Name>
+        <PublishedFileId>1135484957</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="NPC Weapon Upgrades">
+        <Name>1555044803.sbm</Name>
+        <PublishedFileId>1555044803</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="More Encounters - Content">
+        <Name>2411541991.sbm</Name>
+        <PublishedFileId>2411541991</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+        <IsDependency>true</IsDependency>
+    </ModItem>
+    <ModItem FriendlyName="Corruption PvE Combat">
+        <Name>914369510.sbm</Name>
+        <PublishedFileId>914369510</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Abandoned Settlements">
+        <Name>2310821218.sbm</Name>
+        <PublishedFileId>2310821218</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Surface Occupation">
+        <Name>1135484957.sbm</Name>
+        <PublishedFileId>1135484957</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="gas giant">
+        <Name>2295277318.sbm</Name>
+        <PublishedFileId>2295277318</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Helghan (Weather Update!)">
+        <Name>1804330510.sbm</Name>
+        <PublishedFileId>1804330510</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Planet 26 2.0">
+        <Name>2079185441.sbm</Name>
+        <PublishedFileId>2079185441</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+    <ModItem FriendlyName="Dusty Desert Planet">
+        <Name>584407944.sbm</Name>
+        <PublishedFileId>584407944</PublishedFileId>
+        <PublishedServiceName>Steam</PublishedServiceName>
+    </ModItem>
+</Mods>

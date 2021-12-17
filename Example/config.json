@@ -1,0 +1,27 @@
+{
+    "name": "Lobby",
+    "servername": "[AU] Horizons | dis.gd/horizons",
+    "worldname": "[AU] Horizons | PvE/PvP | Development",
+    "dir": "C:\\Services\\Space Engineers\\Lobby",
+    "world": "World",
+    "instance": "Instances\\Lobby",
+    "sandbox": "C:\\Services\\Space Engineers\\Lobby\\TorchJs\\Demo\\sandbox.cfg",
+    "mods": [
+        "./Example/mods.pack"
+    ],
+    "plugins": [
+        "./Example/plugins.pack"
+    ],
+    "port": "27016",
+    "discord": {
+        "token": "",
+        "prefix": "!",
+        "admin_roles": [
+            "754383682713682065",
+            "753919914837803068",
+            "685772632292982794"
+        ],
+        "notification_channel": "669408058564411393",
+        "command_channel": "669408058564411393"
+    }
+}

@@ -7,5 +7,19 @@
     "dependencies": {
         "discord.js": "^13.3.1",
         "xml2js": "^0.4.23"
+    },
+    "devDependencies": {
+        "pkg": "^5.4.1"
+    },
+    "bin": {
+        "myapp": "./main.js"
+    },
+    "pkg": {
+        "assets": [
+            "node_modules/**/*"
+        ],
+        "targets": [
+            "node16-win-x64"
+        ]
     }
 }

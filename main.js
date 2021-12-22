@@ -109,7 +109,7 @@ async function FilePrep() {
 
 
         if (config.servername) Sandbox.MyObjectBuilder_Checkpoint.SessionName[0] = config.worldname
-        Sandbox.MyObjectBuilder_Checkpoint.Settings = SEDTemplate.MyConfigDedicated.SessionSettings[0]
+        Sandbox.MyObjectBuilder_WorldConfiguration.Settings = SEDTemplate.MyConfigDedicated.SessionSettings[0]
 
 
         if (config.servername) SandboxConfig.MyObjectBuilder_WorldConfiguration.SessionName[0] = config.worldname

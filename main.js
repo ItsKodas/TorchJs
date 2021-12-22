@@ -108,7 +108,7 @@ async function FilePrep() {
         if (config.worldname) SEDLive.MyConfigDedicated.WorldName[0] = config.worldname
 
 
-        if (config.servername) Sandbox.MyObjectBuilder_Checkpoint.SessionName[0] = config.worldname
+        if (config.servername) Sandbox.MyObjectBuilder_WorldConfiguration.SessionName[0] = config.worldname
         Sandbox.MyObjectBuilder_WorldConfiguration.Settings = SEDTemplate.MyConfigDedicated.SessionSettings[0]
 
 
@@ -122,7 +122,7 @@ async function FilePrep() {
             for (pack of config.mods) {
                 await ParseXML(pack).then(result => result.Mods.ModItem.forEach(mod => { if (!Ids.includes(mod.PublishedFileId)) Mods.push(mod), Ids.push(mod.PublishedFileId) }))
             }
-            Sandbox.MyObjectBuilder_Checkpoint.Mods = { ModItem: Mods }
+            Sandbox.MyObjectBuilder_WorldConfiguration.Mods = { ModItem: Mods }
             SandboxConfig.MyObjectBuilder_WorldConfiguration.Mods = { ModItem: Mods }
         }
 

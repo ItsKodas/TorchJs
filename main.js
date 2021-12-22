@@ -218,6 +218,8 @@ function BuildXML(obj) {
 //!
 
 function Notification(message, color) {
+    if (!config.discord) return
+    if (!config.discord.token) return
     if (!notification_channel || !message) return
     try {
         var embed = {

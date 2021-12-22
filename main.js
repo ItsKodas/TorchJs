@@ -134,9 +134,9 @@ async function FilePrep() {
         }
 
 
-        //fs.writeFileSync(`${config.dir}/${config.instance}/SpaceEngineers-Dedicated.cfg`, BuildXML(SEDLive)), console.log('SpaceEngineers-Dedicated Config Updated!')
-        //fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox.sbc`, BuildXML(Sandbox)), console.log('Sandbox Updated!')
-        //fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox_config.sbc`, BuildXML(SandboxConfig)), console.log('Sandbox Config Updated!')
+        fs.writeFileSync(`${config.dir}/${config.instance}/SpaceEngineers-Dedicated.cfg`, BuildXML(SEDLive)), console.log('SpaceEngineers-Dedicated Config Updated!')
+        fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox.sbc`, BuildXML(Sandbox)), console.log('Sandbox Updated!')
+        fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox_config.sbc`, BuildXML(SandboxConfig)), console.log('Sandbox Config Updated!')
     }
 
 }
@@ -155,7 +155,6 @@ async function StartProcess() {
 
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
-    return
 
     console.log('Launching Instance...'), Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
     Torch = spawn(`${config.dir}\\Torch.Server.exe`)

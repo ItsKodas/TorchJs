@@ -92,6 +92,13 @@ async function FilePrep() {
     fs.writeFileSync(`${config.dir}/Torch.cfg`, BuildXML(TorchCFG)), console.log('Torch Config Updated!')
 
 
+    //? Logging
+    var NLog = await ParseXML(`${config.dir}/NLog-user.config`)
+    NLog.nlog.targets[0].target[1].$.fileName = "Logs\\" + config.name + "\\Keen-${shortdate}.log"
+    NLog.nlog.targets[0].target[2].$.fileName = "Logs\\" + config.name + "\\Keen-${shortdate}.log"
+    fs.writeFileSync(`${config.dir}/NLog-user.config`, BuildXML(NLog)), console.log('NLog Config Updated!')
+
+
     //? SEDedicated
     if (config.sandbox && config.world) {
         var SEDTemplate = await ParseXML(config.sandbox)
@@ -127,9 +134,9 @@ async function FilePrep() {
         }
 
 
-        fs.writeFileSync(`${config.dir}/${config.instance}/SpaceEngineers-Dedicated.cfg`, BuildXML(SEDLive)), console.log('SpaceEngineers-Dedicated Config Updated!')
-        fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox.sbc`, BuildXML(Sandbox)), console.log('Sandbox Updated!')
-        fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox_config.sbc`, BuildXML(SandboxConfig)), console.log('Sandbox Config Updated!')
+        //fs.writeFileSync(`${config.dir}/${config.instance}/SpaceEngineers-Dedicated.cfg`, BuildXML(SEDLive)), console.log('SpaceEngineers-Dedicated Config Updated!')
+        //fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox.sbc`, BuildXML(Sandbox)), console.log('Sandbox Updated!')
+        //fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox_config.sbc`, BuildXML(SandboxConfig)), console.log('Sandbox Config Updated!')
     }
 
 }
@@ -148,6 +155,7 @@ async function StartProcess() {
 
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
+    return
 
     console.log('Launching Instance...'), Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
     Torch = spawn(`${config.dir}\\Torch.Server.exe`)

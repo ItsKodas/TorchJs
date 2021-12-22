@@ -93,10 +93,21 @@ async function FilePrep() {
 
 
     //? Logging
-    var NLog = await ParseXML(`${config.dir}/NLog-user.config`)
+    var NLog = await ParseXML(`${config.dir}/NLog.config`)
+    var NLogUser = await ParseXML(`${config.dir}/NLog-user.config`)
+
     NLog.nlog.targets[0].target[1].$.fileName = "Logs\\" + config.name + "\\Keen-${shortdate}.log"
-    NLog.nlog.targets[0].target[2].$.fileName = "Logs\\" + config.name + "\\Keen-${shortdate}.log"
-    fs.writeFileSync(`${config.dir}/NLog-user.config`, BuildXML(NLog)), console.log('NLog Config Updated!')
+    NLog.nlog.targets[0].target[2].$.fileName = "Logs\\" + config.name + "\\Torch-${shortdate}.log"
+    NLog.nlog.targets[0].target[3].$.fileName = "Logs\\" + config.name + "\\Chat.log"
+    NLog.nlog.targets[0].target[5].$.fileName = "Logs\\" + config.name + "\\patch.log"
+
+    NLogUser.nlog.targets[0].target[1].$.fileName = "Logs\\" + config.name + "\\Keen-${shortdate}.log"
+    NLogUser.nlog.targets[0].target[2].$.fileName = "Logs\\" + config.name + "\\Torch-${shortdate}.log"
+    NLogUser.nlog.targets[0].target[3].$.fileName = "Logs\\" + config.name + "\\Chat.log"
+    NLogUser.nlog.targets[0].target[5].$.fileName = "Logs\\" + config.name + "\\patch.log"
+
+    fs.writeFileSync(`${config.dir}/NLog.config`, BuildXML(NLog)), console.log('NLog Config Updated!')
+    fs.writeFileSync(`${config.dir}/NLog-user.config`, BuildXML(NLogUser)), console.log('NLog-user Config Updated!')
 
 
     //? SEDedicated

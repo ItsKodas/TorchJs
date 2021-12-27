@@ -5,7 +5,7 @@ console.log('Check out the creator at https://discord.gg/horizons or https://www
 //! Prep Script
 //!
 
-var Torch, manualStop = false
+var Torch, manualStop, delay, notification_channel, command_channel = false
 
 const fs = require('fs')
 
@@ -52,6 +52,8 @@ if (!fs.existsSync('config.json') && !config.config) {
 if (temp.config) config = JSON.parse(fs.readFileSync(temp.config, 'utf8'))
 for (arg in temp) config[arg] = temp[arg]
 
+if (config.delay) delay = parseInt(config.delay) * 1000
+
 if (!config.instance) config.instance = 'Instance'
 config.dir = config.dir.replace(/\//g, '\\')
 
@@ -61,8 +63,9 @@ if (config.discord.token) {
         console.log(`Logged in as ${client.user.tag}!`)
         if (config.discord.notification_channel) notification_channel = await client.channels.fetch(config.discord.notification_channel)
         if (config.discord.command_channel) command_channel = await client.channels.fetch(config.discord.command_channel)
+        setTimeout(StartProcess, delay || 500)
     })
-}
+} else setTimeout(StartProcess, delay || 500)
 
 
 
@@ -174,10 +177,12 @@ async function StartProcess() {
         data = data.toString('utf8')
         console.log(data)
 
+        if (data.includes('Chat:')) return
+
         if (data.includes('Game ready')) Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
 
         if (data.includes('Server stopped.')) {
-            Torch.kill(), setTimeout(StartProcess, 8000)
+            Torch.kill(), setTimeout(StartProcess, delay || 500)
             Notification(`⛔ ${config.name} has Stopped`, '#d43333')
         }
 
@@ -195,20 +200,19 @@ async function StartProcess() {
         }
     })
 
-    Torch.on('close', () => {
-        if (manualStop) return
-        Notification(`❌ ${config.name} has Crashed!`, '#d43333')
-        setTimeout(StartProcess, 8000)
-    })
+    // Torch.on('close', () => {
+    //     if (manualStop) return
+    //     Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+    //     setTimeout(StartProcess, 8000)
+    // })
 
-    Torch.on('error', () => {
-        if (manualStop) return
-        Notification(`❌ ${config.name} has Crashed!`, '#d43333')
-        setTimeout(StartProcess, 8000)
-    })
+    // Torch.on('error', () => {
+    //     if (manualStop) return
+    //     Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+    //     setTimeout(StartProcess, 8000)
+    // })
 
 }
-setTimeout(StartProcess, 5000)
 
 
 
@@ -236,8 +240,6 @@ function BuildXML(obj) {
 //!
 
 function Notification(message, color) {
-    if (!config.discord) return
-    if (!config.discord.token) return
     if (!notification_channel || !message) return
     try {
         var embed = {
@@ -254,12 +256,11 @@ function Notification(message, color) {
 
 client.on('messageCreate', msg => {
     if (msg.author.bot) return
-    if (msg.channel.id != notification_channel.id) return
+    if (msg.channel.id != command_channel.id) return
 
     var args = msg.content.toLowerCase().trim().split(' ')
     if (args[0].charAt(0) !== config.discord.prefix || args[1] !== config.name.toLowerCase()) return
     args[0] = args[0].substring(1)
-
 
     var guild = client.guilds.cache.get(msg.guild.id)
     var member = guild.members.cache.get(msg.author.id)

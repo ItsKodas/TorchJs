@@ -38,6 +38,7 @@ if (!fs.existsSync('config.json') && !config.config) {
         "world": "MyWorldSave",
         "instance": "Instance",
         "sandbox": "Example/sandbox.cfg",
+        "webhook": "http://myurl.com",
         "mods": ["Example/mods1.pack", "Example/mods2.pack"],
         "plugins": ["Example/plugins1.pack", "Example/plugins2.pack"],
         "discord": {
@@ -55,11 +56,10 @@ for (arg in temp) config[arg] = temp[arg]
 if (config.delay) delay = parseInt(config.delay) * 1000
 
 if (!config.instance) config.instance = 'Instance'
-config.dir = config.dir.replace(/\//g, '\\')
 
 if (config.discord.token) {
     client.login(config.discord.token)
-    client.on('ready', async() => {
+    client.on('ready', async () => {
         console.log(`Logged in as ${client.user.tag}!`)
         if (config.discord.notification_channel) notification_channel = await client.channels.fetch(config.discord.notification_channel)
         if (config.discord.command_channel) command_channel = await client.channels.fetch(config.discord.command_channel)
@@ -296,3 +296,38 @@ client.on('messageCreate', msg => {
         Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')
     }
 })
+
+
+
+//!
+//! Webhook
+//!
+
+const fetch = require('node-fetch')
+async function Webhook() {
+
+    var Sandbox = await ParseXML(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox.sbc`)
+
+    var data = {}
+
+    for (Player of Sandbox.MyObjectBuilder_Checkpoint.AllPlayersData[0].dictionary[0].item) {
+        if (Player.Value[0].Connected[0] === 'false') continue
+        data[Player.Value[0].IdentityId[0]] = {
+            name: Player.Value[0].DisplayName[0],
+            admin: Player.Value[0].PromoteLevel[0],
+            creative: Player.Value[0].CreativeToolsEnabled[0],
+            admin_settings: Player.Value[0].RemoteAdminSettings[0]
+        }
+    }
+
+    fetch(config.webhook, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Sector': config.name
+        },
+        body: JSON.stringify(data)
+    })
+
+}
+if (config.webhook) setInterval(Webhook, 1000 * 60), Webhook()

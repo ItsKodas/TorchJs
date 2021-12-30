@@ -328,6 +328,11 @@ async function Webhook() {
         },
         body: JSON.stringify(data)
     })
+        .then(res => {
+            if (res.status !== 200) console.log(`Webhook Error: ${res.status}`)
+        })
+        .catch(err => console.log(err))
+
 
 }
 if (config.webhook) setInterval(Webhook, 1000 * 60), Webhook()

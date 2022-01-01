@@ -1,6 +1,10 @@
 //? Shameless Promotion ;)
 console.log('Check out the creator at https://discord.gg/horizons or https://www.horizons.gg')
 
+const World = require('./Modules/worldedit.js')
+const Discord = require('./Modules/discord.js')
+
+
 //!
 //! Prep Script
 //!
@@ -34,24 +38,32 @@ if (!fs.existsSync('config.json') && !config.config) {
         "name": "Lobby",
         "servername": "My Awesome Server!",
         "worldname": "My Awesome World!",
-        "dir": "path\\to\\server",
+        "dir": "path/to/server",
         "world": "MyWorldSave",
         "instance": "Instance",
         "sandbox": "Example/sandbox.cfg",
         "webhook": "http://myurl.com",
         "mods": ["Example/mods1.pack", "Example/mods2.pack"],
         "plugins": ["Example/plugins1.pack", "Example/plugins2.pack"],
-        "scripts": "./Scripts",
         "discord": {
             "token": "",
             "prefix": "!",
             "admin_roles": ["roleid1", "roleid2"],
             "notification_channel": "",
             "command_channel": ""
+        },
+        "scripts": {
+            "path": "./path/to/scripts",
+            "OnPrep": [],
+            "OnStart": [],
+            "OnStop": [],
+            "OnLog": [],
+            "OnCommand": []
         }
     }, null, '\t'))
 }
 if (temp.config) config = JSON.parse(fs.readFileSync(temp.config, 'utf8'))
+else (config = JSON.parse(fs.readFileSync('config.json', 'utf8'))), console.log('No config file specified, using default.')
 for (arg in temp) config[arg] = temp[arg]
 
 if (config.delay) delay = parseInt(config.delay) * 1000
@@ -62,23 +74,23 @@ if (config.discord.token) {
     client.login(config.discord.token)
     client.on('ready', async () => {
         console.log(`Logged in as ${client.user.tag}!`)
-        if (config.discord.notification_channel) notification_channel = await client.channels.fetch(config.discord.notification_channel)
-        if (config.discord.command_channel) command_channel = await client.channels.fetch(config.discord.command_channel)
+        if (config.discord.notification_channel) notification_channel = await client.channels.fetch(config.discord.notification_channel), process.notification_channel = notification_channel
+        if (config.discord.command_channel) command_channel = await client.channels.fetch(config.discord.command_channel), process.command_channel = command_channel
         setTimeout(StartProcess, delay || 500)
     })
 } else setTimeout(StartProcess, delay || 500)
 
-
-if (!config.scripts) {
-    config.scripts('./Scripts')
-    if (!fs.existsSync('Scripts')) fs.mkdirSync('Scripts')
+if (config.scripts.path) {
+    if (!fs.existsSync(`${config.scripts.path}/OnPrep`)) fs.mkdirSync(`${config.scripts.path}/OnPrep`)
+    if (!fs.existsSync(`${config.scripts.path}/OnStart`)) fs.mkdirSync(`${config.scripts.path}/OnStart`)
+    if (!fs.existsSync(`${config.scripts.path}/OnStop`)) fs.mkdirSync(`${config.scripts.path}/OnStop`)
+    if (!fs.existsSync(`${config.scripts.path}/OnLog`)) fs.mkdirSync(`${config.scripts.path}/OnLog`)
+    if (!fs.existsSync(`${config.scripts.path}/OnCommand`)) fs.mkdirSync(`${config.scripts.path}/OnCommand`)
 }
-if (!fs.existsSync(`${config.scripts}/OnPrep`)) fs.mkdirSync(`${config.scripts}/OnPrep`)
-if (!fs.existsSync(`${config.scripts}/OnStart`)) fs.mkdirSync(`${config.scripts}/OnStart`)
-if (!fs.existsSync(`${config.scripts}/OnStop`)) fs.mkdirSync(`${config.scripts}/OnStop`)
-if (!fs.existsSync(`${config.scripts}/OnLog`)) fs.mkdirSync(`${config.scripts}/OnLog`)
 
 process.env = config
+
+LoadScripts('OnPrep')
 
 
 
@@ -184,47 +196,49 @@ async function StartProcess() {
     await FilePrep(), console.log('Files Ready!')
 
     console.log('Loading Scripts...')
-    await LoadScripts('OnStart'), console.log('Scripts Loaded!')
+    await LoadScripts('OnStart')
 
-    console.log('Launching Instance...'), Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
+    console.log('Launching Instance...'), Discord.Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
     Torch = spawn(`${config.dir}\\Torch.Server.exe`)
 
-    Torch.stdout.on('data', data => {
+    Torch.stdout.on('data', async data => {
         data = data.toString('utf8')
         console.log(data)
 
         if (data.includes('Chat:')) return
 
-        if (data.includes('Game ready')) Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
+        if (data.includes('Game ready')) Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
 
         if (data.includes('Server stopped.')) {
             Torch.kill(), setTimeout(StartProcess, delay || 500)
-            Notification(`⛔ ${config.name} has Stopped`, '#d43333')
+            Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
+            await LoadScripts('OnStop')
         }
 
         if (data.includes('Generating minidump at')) {
             Torch.kill(), setTimeout(StartProcess, 8000)
-            Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+            Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+            await LoadScripts('OnStop')
         }
 
         if (data.includes('MultiplayerManagerBase: Player') && data.includes('joined')) {
-            Notification(`🤝 ${data.split('Player ')[1].split(' joined')[0]} has Joined ${config.name}`, '#b8ffa8')
+            Discord.Notification(`🤝 ${data.split('Player ')[1].split(' joined')[0]} has Joined ${config.name}`, '#b8ffa8')
         }
         if (data.includes('Keen: User left')) {
             if (data.includes('User left [') && data.includes(']') && data.includes('...')) return
-            Notification(`👋 ${data.split('User left ')[1].split('\n')[0].slice(0, -1)} has left ${config.name}`, '#ff887d')
+            Discord.Notification(`👋 ${data.split('User left ')[1].split('\n')[0].slice(0, -1)} has left ${config.name}`, '#ff887d')
         }
     })
 
     // Torch.on('close', () => {
     //     if (manualStop) return
-    //     Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+    //     Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
     //     setTimeout(StartProcess, 8000)
     // })
 
     // Torch.on('error', () => {
     //     if (manualStop) return
-    //     Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+    //     Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
     //     setTimeout(StartProcess, 8000)
     // })
 
@@ -237,10 +251,9 @@ async function StartProcess() {
 //!
 
 async function LoadScripts(type) {
-    fs.readdirSync(`${config.scripts}/${type}`).forEach(file => {
-        if (!file.includes('.js')) return
-        require(`${config.scripts}/${type}/${file}`)
-        console.log(`Mounted ${file}`)
+    config.scripts[type].forEach(script => {
+        require(`${config.scripts.path}/${type}/${script}`)(client)
+        console.log(`${type} - ${script}`)
     })
 }
 
@@ -269,24 +282,15 @@ function BuildXML(obj) {
 //! Discord Functions
 //!
 
-function Notification(message, color) {
-    if (!notification_channel || !message) return
-    try {
-        var embed = {
-            "description": message,
-            "color": color || '#ffffff'
-        }
-
-        notification_channel.send({ embeds: [embed] }).then(msg => setTimeout(() => { msg.delete().catch(err => console.log('Failed to delete message!')) }, 120 * 1000))
-        console.log(message)
-    } catch (err) {
-        console.log(err)
-    }
-}
-
 client.on('messageCreate', msg => {
     if (msg.author.bot) return
     if (msg.channel.id != command_channel.id) return
+
+    config.scripts.OnCommand.forEach(script => {
+        require(`${config.scripts.path}/OnCommand/${script}`)(msg, client)
+        console.log(`OnCommand - ${script}`)
+    })
+
 
     var args = msg.content.toLowerCase().trim().split(' ')
     if (args[0].charAt(0) !== config.discord.prefix || args[1] !== config.name.toLowerCase()) return
@@ -307,7 +311,7 @@ client.on('messageCreate', msg => {
         manualStop = true
         Torch.kill()
         msg.reply(`${config.name} has been killed!`)
-        Notification(`🔧 ${config.name} has been stopped by a Staff Member.`, '#a13ffc')
+        Discord.Notification(`🔧 ${config.name} has been stopped by a Staff Member.`, '#a13ffc')
 
         Torch = undefined
     }
@@ -323,7 +327,7 @@ client.on('messageCreate', msg => {
         manualStop = true
         Torch.kill(), setTimeout(() => { StartProcess(), manualStop = false }, 10 * 1000)
         msg.reply(`Restart Initiated for ${config.name}.`)
-        Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')
+        Discord.Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')
     }
 })
 
@@ -342,7 +346,7 @@ async function Webhook() {
 
     try {
         for (Player of Sandbox.MyObjectBuilder_Checkpoint.AllPlayersData[0].dictionary[0].item) {
-            if (Player.Value[0].Connected[0] === 'false') continue
+            if (Player.Value[0].Connected[0] === 'false' || !Player.Value[0].DisplayName[0]) continue
             data[Player.Value[0].IdentityId[0]] = {
                 name: Player.Value[0].DisplayName[0],
                 admin: Player.Value[0].PromoteLevel[0],

@@ -41,6 +41,7 @@ if (!fs.existsSync('config.json') && !config.config) {
         "webhook": "http://myurl.com",
         "mods": ["Example/mods1.pack", "Example/mods2.pack"],
         "plugins": ["Example/plugins1.pack", "Example/plugins2.pack"],
+        "scripts": "./Scripts",
         "discord": {
             "token": "",
             "prefix": "!",
@@ -66,6 +67,18 @@ if (config.discord.token) {
         setTimeout(StartProcess, delay || 500)
     })
 } else setTimeout(StartProcess, delay || 500)
+
+
+if (!config.scripts) {
+    config.scripts('./Scripts')
+    if (!fs.existsSync('Scripts')) fs.mkdirSync('Scripts')
+}
+if (!fs.existsSync(`${config.scripts}/OnPrep`)) fs.mkdirSync(`${config.scripts}/OnPrep`)
+if (!fs.existsSync(`${config.scripts}/OnStart`)) fs.mkdirSync(`${config.scripts}/OnStart`)
+if (!fs.existsSync(`${config.scripts}/OnStop`)) fs.mkdirSync(`${config.scripts}/OnStop`)
+if (!fs.existsSync(`${config.scripts}/OnLog`)) fs.mkdirSync(`${config.scripts}/OnLog`)
+
+process.env = config
 
 
 
@@ -170,6 +183,9 @@ async function StartProcess() {
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
 
+    console.log('Loading Scripts...')
+    await LoadScripts('OnStart'), console.log('Scripts Loaded!')
+
     console.log('Launching Instance...'), Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
     Torch = spawn(`${config.dir}\\Torch.Server.exe`)
 
@@ -212,6 +228,20 @@ async function StartProcess() {
     //     setTimeout(StartProcess, 8000)
     // })
 
+}
+
+
+
+//!
+//! Scripts
+//!
+
+async function LoadScripts(type) {
+    fs.readdirSync(`${config.scripts}/${type}`).forEach(file => {
+        if (!file.includes('.js')) return
+        require(`${config.scripts}/${type}/${file}`)
+        console.log(`Mounted ${file}`)
+    })
 }
 
 
@@ -310,15 +340,17 @@ async function Webhook() {
 
     var data = {}
 
-    for (Player of Sandbox.MyObjectBuilder_Checkpoint.AllPlayersData[0].dictionary[0].item) {
-        if (Player.Value[0].Connected[0] === 'false') continue
-        data[Player.Value[0].IdentityId[0]] = {
-            name: Player.Value[0].DisplayName[0],
-            admin: Player.Value[0].PromoteLevel[0],
-            creative: Player.Value[0].CreativeToolsEnabled[0],
-            admin_settings: Player.Value[0].RemoteAdminSettings[0]
+    try {
+        for (Player of Sandbox.MyObjectBuilder_Checkpoint.AllPlayersData[0].dictionary[0].item) {
+            if (Player.Value[0].Connected[0] === 'false') continue
+            data[Player.Value[0].IdentityId[0]] = {
+                name: Player.Value[0].DisplayName[0],
+                admin: Player.Value[0].PromoteLevel[0],
+                creative: Player.Value[0].CreativeToolsEnabled[0],
+                admin_settings: Player.Value[0].RemoteAdminSettings[0]
+            }
         }
-    }
+    } catch (err) { console.log(err) }
 
     fetch(config.webhook, {
         method: 'POST',
@@ -329,7 +361,7 @@ async function Webhook() {
         body: JSON.stringify(data)
     })
         .then(res => {
-            if (res.status !== 200) console.log(`Webhook Error: ${res.status}`)
+            if (res.status !== 200) console.log(`Webhook response: ${res.status}`)
         })
         .catch(err => console.log(err))
 

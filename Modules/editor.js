@@ -4,9 +4,10 @@ const xml2js = require('xml2js')
 const xmlParser = new xml2js.Parser()
 const xmlBuilder = new xml2js.Builder()
 
-function ParseXML(file) {
+
+function ParseXML(dir) {
     return new Promise((resolve, reject) => {
-        xmlParser.parseString(fs.readFileSync(file, 'utf8'), (err, result) => {
+        xmlParser.parseString(fs.readFileSync(dir, 'utf8'), (err, result) => {
             if (err) reject(err)
             resolve(result)
         })
@@ -15,6 +16,26 @@ function ParseXML(file) {
 
 function BuildXML(obj) {
     return xmlBuilder.buildObject(obj)
+}
+
+
+
+async function GetTorchCFG() {
+    return await ParseXML(`${process.env.dir}/Torch.cfg`)
+}
+
+async function UpdateTorchCFG(obj) {
+    fs.writeFileSync(`${process.env.dir}/Torch.cfg`, await BuildXML(obj))
+}
+
+
+
+async function GetSEDConfig() {
+    return await ParseXML(`${process.env.dir}/${process.env.instance}/SpaceEngineers-Dedicated.cfg`)
+}
+
+async function UpdateSEDConfig(obj) {
+    fs.writeFileSync(`${process.env.dir}/${process.env.instance}/SpaceEngineers-Dedicated.cfg`, await BuildXML(obj))
 }
 
 
@@ -51,6 +72,12 @@ async function UpdateSandboxConfig(obj) {
 module.exports = {
     ParseXML,
     BuildXML,
+
+    GetTorchCFG,
+    UpdateTorchCFG,
+
+    GetSEDConfig,
+    UpdateSEDConfig,
 
     GetSandboxSBC,
     GetSandboxSBS,

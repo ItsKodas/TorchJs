@@ -80,7 +80,7 @@ if (config.discord.token) {
     })
 } else setTimeout(StartProcess, delay || 500)
 
-if (config.scripts.path) {
+if (config.scripts) if (config.scripts.path) {
     if (!fs.existsSync(`${config.scripts.path}/OnPrep`)) fs.mkdirSync(`${config.scripts.path}/OnPrep`)
     if (!fs.existsSync(`${config.scripts.path}/OnStart`)) fs.mkdirSync(`${config.scripts.path}/OnStart`)
     if (!fs.existsSync(`${config.scripts.path}/OnStop`)) fs.mkdirSync(`${config.scripts.path}/OnStop`)

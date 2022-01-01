@@ -1,6 +1,10 @@
 //? Shameless Promotion ;)
 console.log('Check out the creator at https://discord.gg/horizons or https://www.horizons.gg')
 
+const Editor = require('./Modules/editor.js')
+const Discord = require('./Modules/discord.js')
+
+
 //!
 //! Prep Script
 //!
@@ -34,7 +38,7 @@ if (!fs.existsSync('config.json') && !config.config) {
         "name": "Lobby",
         "servername": "My Awesome Server!",
         "worldname": "My Awesome World!",
-        "dir": "path\\to\\server",
+        "dir": "path/to/server",
         "world": "MyWorldSave",
         "instance": "Instance",
         "sandbox": "Example/sandbox.cfg",
@@ -47,10 +51,19 @@ if (!fs.existsSync('config.json') && !config.config) {
             "admin_roles": ["roleid1", "roleid2"],
             "notification_channel": "",
             "command_channel": ""
+        },
+        "scripts": {
+            "path": "./path/to/scripts",
+            "OnPrep": [],
+            "OnStart": [],
+            "OnStop": [],
+            "OnLog": [],
+            "OnCommand": []
         }
     }, null, '\t'))
 }
 if (temp.config) config = JSON.parse(fs.readFileSync(temp.config, 'utf8'))
+else (config = JSON.parse(fs.readFileSync('config.json', 'utf8'))), console.log('No config file specified, using default.')
 for (arg in temp) config[arg] = temp[arg]
 
 if (config.delay) delay = parseInt(config.delay) * 1000
@@ -61,11 +74,26 @@ if (config.discord.token) {
     client.login(config.discord.token)
     client.on('ready', async () => {
         console.log(`Logged in as ${client.user.tag}!`)
-        if (config.discord.notification_channel) notification_channel = await client.channels.fetch(config.discord.notification_channel)
-        if (config.discord.command_channel) command_channel = await client.channels.fetch(config.discord.command_channel)
+        if (config.discord.notification_channel) notification_channel = await client.channels.fetch(config.discord.notification_channel), process.notification_channel = notification_channel
+        if (config.discord.command_channel) command_channel = await client.channels.fetch(config.discord.command_channel), process.command_channel = command_channel
         setTimeout(StartProcess, delay || 500)
     })
 } else setTimeout(StartProcess, delay || 500)
+
+if (config.scripts.path) {
+    if (!fs.existsSync(`${config.scripts.path}/OnPrep`)) fs.mkdirSync(`${config.scripts.path}/OnPrep`)
+    if (!fs.existsSync(`${config.scripts.path}/OnStart`)) fs.mkdirSync(`${config.scripts.path}/OnStart`)
+    if (!fs.existsSync(`${config.scripts.path}/OnStop`)) fs.mkdirSync(`${config.scripts.path}/OnStop`)
+    if (!fs.existsSync(`${config.scripts.path}/OnLog`)) fs.mkdirSync(`${config.scripts.path}/OnLog`)
+    if (!fs.existsSync(`${config.scripts.path}/OnCommand`)) fs.mkdirSync(`${config.scripts.path}/OnCommand`)
+}
+
+process.env = config
+
+config.scripts.OnPrep.forEach(script => {
+    require(`${config.scripts.path}/OnPrep/${script}.js`)
+    console.log(`OnPrep - ${script}`)
+})
 
 
 
@@ -76,7 +104,7 @@ if (config.discord.token) {
 async function FilePrep() {
 
     //? TorchCFG
-    var TorchCFG = await ParseXML(`${config.dir}/Torch.cfg`)
+    var TorchCFG = await Editor.GetTorchCFG()
 
     TorchCFG.TorchConfig.InstanceName[0] = config.name || TorchCFG.TorchConfig.InstanceName[0]
     TorchCFG.TorchConfig.Autostart[0] = 'true'
@@ -87,17 +115,17 @@ async function FilePrep() {
     if (config.plugins) {
         var Plugins = []
         for (pack of config.plugins) {
-            await ParseXML(pack).then(result => result.Plugins.guid.forEach(guid => { if (!Plugins.includes(guid)) Plugins.push(guid) }))
+            await Editor.ParseXML(pack).then(result => result.Plugins.guid.forEach(guid => { if (!Plugins.includes(guid)) Plugins.push(guid) }))
         }
         TorchCFG.TorchConfig.Plugins = { guid: Plugins }
     }
 
-    fs.writeFileSync(`${config.dir}/Torch.cfg`, BuildXML(TorchCFG)), console.log('Torch Config Updated!')
+    Editor.UpdateTorchCFG(TorchCFG), console.log('Torch Config Updated!')
 
 
     //? Logging
-    var NLog = await ParseXML(`${config.dir}/NLog.config`)
-    var NLogUser = await ParseXML(`${config.dir}/NLog-user.config`)
+    var NLog = await Editor.ParseXML(`${config.dir}/NLog.config`)
+    var NLogUser = await Editor.ParseXML(`${config.dir}/NLog-user.config`)
 
     NLog.nlog.targets[0].target[1].$.fileName = "Logs\\" + config.name + "\\Keen-${shortdate}.log"
     NLog.nlog.targets[0].target[2].$.fileName = "Logs\\" + config.name + "\\Torch-${shortdate}.log"
@@ -109,16 +137,16 @@ async function FilePrep() {
     NLogUser.nlog.targets[0].target[3].$.fileName = "Logs\\" + config.name + "\\Chat.log"
     NLogUser.nlog.targets[0].target[5].$.fileName = "Logs\\" + config.name + "\\patch.log"
 
-    fs.writeFileSync(`${config.dir}/NLog.config`, BuildXML(NLog)), console.log('NLog Config Updated!')
-    fs.writeFileSync(`${config.dir}/NLog-user.config`, BuildXML(NLogUser)), console.log('NLog-user Config Updated!')
+    fs.writeFileSync(`${config.dir}/NLog.config`, Editor.BuildXML(NLog)), console.log('NLog Config Updated!')
+    fs.writeFileSync(`${config.dir}/NLog-user.config`, Editor.BuildXML(NLogUser)), console.log('NLog-user Config Updated!')
 
 
     //? SEDedicated
     if (config.sandbox && config.world) {
-        var SEDTemplate = await ParseXML(config.sandbox)
-        var SEDLive = await ParseXML(`${config.dir}/${config.instance}/SpaceEngineers-Dedicated.cfg`)
-        var Sandbox = await ParseXML(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox.sbc`)
-        var SandboxConfig = await ParseXML(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox_config.sbc`)
+        var SEDTemplate = await Editor.ParseXML(config.sandbox)
+        var SEDLive = await Editor.GetSEDConfig()
+        var Sandbox = await Editor.GetSandboxSBC()
+        var SandboxConfig = await Editor.GetSandboxConfig()
 
         SEDLive.MyConfigDedicated.SessionSettings[0] = SEDTemplate.MyConfigDedicated.SessionSettings[0]
         SEDLive.MyConfigDedicated.Administrators[0] = SEDTemplate.MyConfigDedicated.Administrators[0]
@@ -141,16 +169,16 @@ async function FilePrep() {
             var Mods = []
             var Ids = []
             for (pack of config.mods) {
-                await ParseXML(pack).then(result => result.Mods.ModItem.forEach(mod => { if (!Ids.includes(mod.PublishedFileId)) Mods.push(mod), Ids.push(mod.PublishedFileId) }))
+                await Editor.ParseXML(pack).then(result => result.Mods.ModItem.forEach(mod => { if (!Ids.includes(mod.PublishedFileId)) Mods.push(mod), Ids.push(mod.PublishedFileId) }))
             }
             Sandbox.MyObjectBuilder_Checkpoint.Mods = { ModItem: Mods }
             SandboxConfig.MyObjectBuilder_WorldConfiguration.Mods = { ModItem: Mods }
         }
 
 
-        fs.writeFileSync(`${config.dir}/${config.instance}/SpaceEngineers-Dedicated.cfg`, BuildXML(SEDLive)), console.log('SpaceEngineers-Dedicated Config Updated!')
-        fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox.sbc`, BuildXML(Sandbox)), console.log('Sandbox Updated!')
-        fs.writeFileSync(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox_config.sbc`, BuildXML(SandboxConfig)), console.log('Sandbox Config Updated!')
+        Editor.UpdateSEDConfig(SEDLive), console.log('SpaceEngineers-Dedicated Config Updated!')
+        Editor.UpdateSandboxSBC(Sandbox), console.log('Sandbox Updated!')
+        Editor.UpdateSandboxConfig(SandboxConfig), console.log('Sandbox Config Updated!')
     }
 
 }
@@ -170,67 +198,50 @@ async function StartProcess() {
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
 
-    console.log('Launching Instance...'), Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
+    config.scripts.OnStart.forEach(script => {
+        require(`${config.scripts.path}/OnStart/${script}.js`)
+        console.log(`OnStart - ${script}`)
+    })
+
+    console.log('Launching Instance...'), Discord.Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
     Torch = spawn(`${config.dir}\\Torch.Server.exe`)
 
-    Torch.stdout.on('data', data => {
+    Torch.stdout.on('data', async data => {
         data = data.toString('utf8')
         console.log(data)
 
+        config.scripts.OnLog.forEach(script => {
+            require(`${config.scripts.path}/OnLog/${script}.js`)(data)
+        })
+
         if (data.includes('Chat:')) return
 
-        if (data.includes('Game ready')) Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
+
+        if (data.includes('Game ready')) Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
 
         if (data.includes('Server stopped.')) {
+            Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
             Torch.kill(), setTimeout(StartProcess, delay || 500)
-            Notification(`⛔ ${config.name} has Stopped`, '#d43333')
+            await LoadScripts('OnStop')
         }
 
         if (data.includes('Generating minidump at')) {
+            Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
             Torch.kill(), setTimeout(StartProcess, 8000)
-            Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+            await LoadScripts('OnStop')
         }
-
-        if (data.includes('MultiplayerManagerBase: Player') && data.includes('joined')) {
-            Notification(`🤝 ${data.split('Player ')[1].split(' joined')[0]} has Joined ${config.name}`, '#b8ffa8')
-        }
-        if (data.includes('Keen: User left')) {
-            if (data.includes('User left [') && data.includes(']') && data.includes('...')) return
-            Notification(`👋 ${data.split('User left ')[1].split('\n')[0].slice(0, -1)} has left ${config.name}`, '#ff887d')
-        }
-    })
-
-    // Torch.on('close', () => {
-    //     if (manualStop) return
-    //     Notification(`❌ ${config.name} has Crashed!`, '#d43333')
-    //     setTimeout(StartProcess, 8000)
-    // })
-
-    // Torch.on('error', () => {
-    //     if (manualStop) return
-    //     Notification(`❌ ${config.name} has Crashed!`, '#d43333')
-    //     setTimeout(StartProcess, 8000)
-    // })
-
-}
-
-
-
-//!
-//! XML Functions
-//!
-
-function ParseXML(file) {
-    return new Promise((resolve, reject) => {
-        xmlParser.parseString(fs.readFileSync(file, 'utf8'), (err, result) => {
-            if (err) reject(err)
-            resolve(result)
-        })
     })
 }
 
-function BuildXML(obj) {
-    return xmlBuilder.buildObject(obj)
+function Stop() {
+    manualStop = true
+    Torch.kill()
+    Discord.Notification(`⛔ ${config.name} has been Stopped`, '#d43333')
+}
+
+function Start() {
+    manualStop = false
+    setTimeout(StartProcess, delay || 500)
 }
 
 
@@ -239,24 +250,15 @@ function BuildXML(obj) {
 //! Discord Functions
 //!
 
-function Notification(message, color) {
-    if (!notification_channel || !message) return
-    try {
-        var embed = {
-            "description": message,
-            "color": color || '#ffffff'
-        }
-
-        notification_channel.send({ embeds: [embed] }).then(msg => setTimeout(() => { msg.delete().catch(err => console.log('Failed to delete message!')) }, 120 * 1000))
-        console.log(message)
-    } catch (err) {
-        console.log(err)
-    }
-}
-
 client.on('messageCreate', msg => {
     if (msg.author.bot) return
     if (msg.channel.id != command_channel.id) return
+
+    config.scripts.OnCommand.forEach(script => {
+        require(`${config.scripts.path}/OnCommand/${script}.js`)(msg, client)
+        console.log(`OnCommand - ${script}`)
+    })
+
 
     var args = msg.content.toLowerCase().trim().split(' ')
     if (args[0].charAt(0) !== config.discord.prefix || args[1] !== config.name.toLowerCase()) return
@@ -274,65 +276,38 @@ client.on('messageCreate', msg => {
 
     if (args[0] === 'stop') {
         if (!Torch) return msg.reply(`${config.name} is already stopped!`)
-        manualStop = true
-        Torch.kill()
+        Stop()
         msg.reply(`${config.name} has been killed!`)
-        Notification(`🔧 ${config.name} has been stopped by a Staff Member.`, '#a13ffc')
+        Discord.Notification(`🔧 ${config.name} has been stopped by a Staff Member.`, '#a13ffc')
 
         Torch = undefined
     }
 
     if (args[0] === 'start') {
         if (Torch) return msg.reply(`${config.name} is already running!`)
-        manualStop = false
-        StartProcess()
+        Start()
         msg.reply(`${config.name} is starting...`)
     }
 
     if (args[0] === 'restart') {
         manualStop = true
-        Torch.kill(), setTimeout(() => { StartProcess(), manualStop = false }, 10 * 1000)
+        Stop(), setTimeout(() => { Start() }, 10 * 1000)
         msg.reply(`Restart Initiated for ${config.name}.`)
-        Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')
+        Discord.Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')
     }
 })
 
 
 
-//!
-//! Webhook
-//!
-
-const fetch = require('node-fetch')
-async function Webhook() {
-
-    var Sandbox = await ParseXML(`${config.dir}/${config.instance}/Saves/${config.world}/Sandbox.sbc`)
-
-    var data = {}
-
-    for (Player of Sandbox.MyObjectBuilder_Checkpoint.AllPlayersData[0].dictionary[0].item) {
-        if (Player.Value[0].Connected[0] === 'false') continue
-        data[Player.Value[0].IdentityId[0]] = {
-            name: Player.Value[0].DisplayName[0],
-            admin: Player.Value[0].PromoteLevel[0],
-            creative: Player.Value[0].CreativeToolsEnabled[0],
-            admin_settings: Player.Value[0].RemoteAdminSettings[0]
-        }
-    }
-
-    fetch(config.webhook, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Sector': config.name
-        },
-        body: JSON.stringify(data)
-    })
-        .then(res => {
-            if (res.status !== 200) console.log(`Webhook Error: ${res.status}`)
-        })
-        .catch(err => console.log(err))
+function Loop() {
+    var temp = JSON.parse(fs.readFileSync(config.config, 'utf8'))
+    config.scripts = temp.scripts
+    process.env.scripts = temp.scripts
+} setInterval(Loop, 1000 * 30)
 
 
+
+module.exports = {
+    Start,
+    Stop
 }
-if (config.webhook) setInterval(Webhook, 1000 * 60), Webhook()

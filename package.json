@@ -16,8 +16,10 @@
         "myapp": "./main.js"
     },
     "pkg": {
+        "scripts": "Scripts/**/*",
         "assets": [
-            "node_modules/**/*"
+            "node_modules/**/*",
+            "Modules/**/*"
         ],
         "targets": [
             "node16-win-x64"

@@ -11,7 +11,7 @@ module.exports = async (msg) => {
 
 
     msg.channel.send('Stopping server to run cleanup script...')
-    Discord.Notification(`⚠️ An Administrator has ran a save reset script, please standby.`)
+    Discord.Notification(`⚠️ An Administrator has ran a world reset script on \`${process.env.name}\`, please standby.`)
 
     Server.Stop()
 

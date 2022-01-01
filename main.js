@@ -90,7 +90,10 @@ if (config.scripts.path) {
 
 process.env = config
 
-LoadScripts('OnPrep')
+config.scripts.OnPrep.forEach(script => {
+    require(`${config.scripts.path}/OnPrep/${script}.js`)
+    console.log(`OnPrep - ${script}`)
+})
 
 
 
@@ -195,8 +198,10 @@ async function StartProcess() {
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
 
-    console.log('Loading Scripts...')
-    await LoadScripts('OnStart')
+    config.scripts.OnStart.forEach(script => {
+        require(`${config.scripts.path}/OnStart/${script}.js`)
+        console.log(`OnStart - ${script}`)
+    })
 
     console.log('Launching Instance...'), Discord.Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
     Torch = spawn(`${config.dir}\\Torch.Server.exe`)
@@ -205,42 +210,27 @@ async function StartProcess() {
         data = data.toString('utf8')
         console.log(data)
 
+        config.scripts.OnLog.forEach(script => {
+            require(`${config.scripts.path}/OnLog/${script}.js`)(data)
+        })
+
         if (data.includes('Chat:')) return
+
 
         if (data.includes('Game ready')) Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
 
         if (data.includes('Server stopped.')) {
-            Torch.kill(), setTimeout(StartProcess, delay || 500)
             Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
+            Torch.kill(), setTimeout(StartProcess, delay || 500)
             await LoadScripts('OnStop')
         }
 
         if (data.includes('Generating minidump at')) {
-            Torch.kill(), setTimeout(StartProcess, 8000)
             Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+            Torch.kill(), setTimeout(StartProcess, 8000)
             await LoadScripts('OnStop')
         }
-
-        if (data.includes('MultiplayerManagerBase: Player') && data.includes('joined')) {
-            Discord.Notification(`🤝 ${data.split('Player ')[1].split(' joined')[0]} has Joined ${config.name}`, '#b8ffa8')
-        }
-        if (data.includes('Keen: User left')) {
-            if (data.includes('User left [') && data.includes(']') && data.includes('...')) return
-            Discord.Notification(`👋 ${data.split('User left ')[1].split('\n')[0].slice(0, -1)} has left ${config.name}`, '#ff887d')
-        }
     })
-
-    // Torch.on('close', () => {
-    //     if (manualStop) return
-    //     Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
-    //     setTimeout(StartProcess, 8000)
-    // })
-
-    // Torch.on('error', () => {
-    //     if (manualStop) return
-    //     Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
-    //     setTimeout(StartProcess, 8000)
-    // })
 }
 
 function Stop() {
@@ -257,19 +247,6 @@ function Start() {
 
 
 //!
-//! Scripts
-//!
-
-async function LoadScripts(type) {
-    config.scripts[type].forEach(script => {
-        require(`${config.scripts.path}/${type}/${script}.js`);(client)
-        console.log(`${type} - ${script}`)
-    })
-}
-
-
-
-//!
 //! Discord Functions
 //!
 
@@ -278,7 +255,7 @@ client.on('messageCreate', msg => {
     if (msg.channel.id != command_channel.id) return
 
     config.scripts.OnCommand.forEach(script => {
-        require(`${config.scripts.path}/OnCommand/${script}.js`);(msg, client)
+        require(`${config.scripts.path}/OnCommand/${script}.js`)(msg, client)
         console.log(`OnCommand - ${script}`)
     })
 
@@ -319,6 +296,14 @@ client.on('messageCreate', msg => {
         Discord.Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')
     }
 })
+
+
+
+function Loop() {
+    var temp = JSON.parse(fs.readFileSync(config.config, 'utf8'))
+    config.scripts = temp.scripts
+    process.env.scripts = temp.scripts
+} setInterval(Loop, 1000 * 30)
 
 
 

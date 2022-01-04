@@ -1,6 +1,6 @@
-const Server = require('../../main.js')
-const World = require('../../Modules/editor.js')
-const Discord = require('../../Modules/discord.js')
+const Server = require('C:\\snapshot\\TorchJs\\main.js')
+const World = require('C:\\snapshot\\TorchJs\\Modules\\editor.js')
+const Discord = require('C:\\snapshot\\TorchJs\\Modules\\discord.js')
 
 module.exports = async (msg) => {
 

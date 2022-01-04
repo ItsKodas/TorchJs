@@ -1,4 +1,4 @@
-const Discord = require('../../Modules/discord.js')
+const Discord = require('C:\\snapshot\\TorchJs\\Modules\\discord.js')
 
 module.exports = (data) => {
     if (data.includes('Chat:')) return

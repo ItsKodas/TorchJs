@@ -1,5 +1,5 @@
-const Editor = require('../../Modules/editor.js')
-const fetch = require('node-fetch')
+const Editor = require('C:\\snapshot\\TorchJs\\Modules\\editor.js')
+const fetch = require('C:\\snapshot\\TorchJs\\node_modules\\node-fetch')
 
 async function Webhook() {
     var Sandbox = await Editor.GetSandboxSBC()

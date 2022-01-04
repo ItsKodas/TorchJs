@@ -1,27 +1,36 @@
 {
     "name": "Lobby",
-    "servername": "[AU] Horizons | dis.gd/horizons",
-    "worldname": "[AU] Horizons | PvE/PvP | Development",
-    "dir": "C:\\Services\\Space Engineers\\Lobby",
-    "world": "World",
-    "instance": "Instances\\Lobby",
-    "sandbox": "C:\\Services\\Space Engineers\\Lobby\\TorchJs\\Demo\\sandbox.cfg",
+    "servername": "My Awesome Server!",
+    "worldname": "My Awesome World!",
+    "dir": "path/to/server",
+    "world": "MyWorldSave",
+    "instance": "Instance",
+    "sandbox": "Example/sandbox.cfg",
+    "webhook": "http://myurl.com",
     "mods": [
-        "./Example/mods.pack"
+        "Example/mods1.pack",
+        "Example/mods2.pack"
     ],
     "plugins": [
-        "./Example/plugins.pack"
+        "Example/plugins1.pack",
+        "Example/plugins2.pack"
     ],
-    "port": "27016",
     "discord": {
         "token": "",
         "prefix": "!",
         "admin_roles": [
-            "754383682713682065",
-            "753919914837803068",
-            "685772632292982794"
+            "roleid1",
+            "roleid2"
         ],
-        "notification_channel": "669408058564411393",
-        "command_channel": "669408058564411393"
+        "notification_channel": "",
+        "command_channel": ""
+    },
+    "scripts": {
+        "path": "./path/to/scripts",
+        "OnPrep": [],
+        "OnStart": [],
+        "OnStop": [],
+        "OnLog": [],
+        "OnCommand": []
     }
 }

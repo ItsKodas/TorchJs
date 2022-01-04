@@ -222,20 +222,26 @@ async function StartProcess() {
         if (data.includes('Server stopped.')) {
             Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
             Torch.kill(), setTimeout(StartProcess, delay || 500)
-            await LoadScripts('OnStop')
+            config.scripts.OnCommand.forEach(script => {
+                require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
+                console.log(`OnStop - ${script}`)
+            })
         }
 
         if (data.includes('Generating minidump at')) {
             Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
             Torch.kill(), setTimeout(StartProcess, 8000)
-            await LoadScripts('OnStop')
+            config.scripts.OnCommand.forEach(script => {
+                require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
+                console.log(`OnStop - ${script}`)
+            })
         }
     })
 }
 
 function Stop() {
     manualStop = true
-    Torch.kill()
+    if (Torch) Torch.kill(), Torch = undefined
     Discord.Notification(`⛔ ${config.name} has been Stopped`, '#d43333')
 }
 

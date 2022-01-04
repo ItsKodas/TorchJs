@@ -195,6 +195,19 @@ async function StartProcess() {
 
     if (Torch) Torch.kill(), Torch = undefined
 
+    if (fs.existsSync(`${config.dir}/BUSY`)) {
+        var Busy = fs.readFileSync(`${config.dir}/BUSY`, 'utf8')
+        var BusyTime = new Date(Busy)
+        var CurrentTime = new Date()
+
+        console.log(CurrentTime - BusyTime)
+
+        if (CurrentTime - BusyTime > 1000 * 20) console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`)
+        else return console.log('Another Torch Instance is Currently Preparing, trying again in 10 seconds...\n', Busy), setTimeout(StartProcess, 1000 * 10)
+    }
+
+    fs.writeFileSync(`${config.dir}/BUSY`, Date().toLocaleUpperCase(), 'utf8')
+
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
 
@@ -222,7 +235,7 @@ async function StartProcess() {
         if (data.includes('Server stopped.')) {
             Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
             Torch.kill(), setTimeout(StartProcess, delay || 500)
-            config.scripts.OnCommand.forEach(script => {
+            config.scripts.OnStop.forEach(script => {
                 require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
                 console.log(`OnStop - ${script}`)
             })
@@ -231,11 +244,13 @@ async function StartProcess() {
         if (data.includes('Generating minidump at')) {
             Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
             Torch.kill(), setTimeout(StartProcess, 8000)
-            config.scripts.OnCommand.forEach(script => {
+            config.scripts.OnStop.forEach(script => {
                 require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
                 console.log(`OnStop - ${script}`)
             })
         }
+
+        if (data.includes('Torch: Initializing server')) fs.unlinkSync(`${config.dir}/BUSY`)
     })
 }
 

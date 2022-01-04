@@ -202,7 +202,7 @@ async function StartProcess() {
 
         console.log(CurrentTime - BusyTime)
 
-        if (CurrentTime - BusyTime > 1000 * 20) console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`)
+        if (CurrentTime - BusyTime > 1000 * 60) console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`)
         else return console.log('Another Torch Instance is Currently Preparing, trying again in 10 seconds...\n', Busy), setTimeout(StartProcess, 1000 * 10)
     }
 

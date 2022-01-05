@@ -64,7 +64,13 @@ if (!fs.existsSync('config.json') && !config.config) {
 }
 if (temp.config) config = JSON.parse(fs.readFileSync(temp.config, 'utf8'))
 else (config = JSON.parse(fs.readFileSync('config.json', 'utf8'))), console.log('No config file specified, using default.')
-for (arg in temp) config[arg] = temp[arg]
+for (arg in temp) {
+    if (arg === 'mods') {
+        if (config.mods) config.mods = config.mods.concat(temp.mods.split(','))
+        else config.mods = temp.mods
+    }
+    else config[arg] = temp[arg]
+}
 
 if (config.delay) delay = parseInt(config.delay) * 1000
 
@@ -204,7 +210,7 @@ async function StartProcess() {
 
         console.log(CurrentTime - BusyTime)
 
-        if (CurrentTime - BusyTime > 1000 * 60) console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`)
+        if (CurrentTime - BusyTime > 1000 * 10) console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`)
         else return console.log('Another Torch Instance is Currently Preparing, trying again in 10 seconds...\n', Busy), setTimeout(StartProcess, 1000 * 10)
     }
 

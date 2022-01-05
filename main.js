@@ -77,6 +77,8 @@ if (config.discord.token) {
         if (config.discord.notification_channel) notification_channel = await client.channels.fetch(config.discord.notification_channel), process.notification_channel = notification_channel
         if (config.discord.command_channel) command_channel = await client.channels.fetch(config.discord.command_channel), process.command_channel = command_channel
         setTimeout(StartProcess, delay || 500)
+
+        process.Discord = client
     })
 } else setTimeout(StartProcess, delay || 500)
 
@@ -250,7 +252,9 @@ async function StartProcess() {
             })
         }
 
-        if (data.includes('Torch: Initializing server')) fs.unlinkSync(`${config.dir}/BUSY`)
+        if (data.includes('Torch: Initializing server')) fs.unlink(`${config.dir}/BUSY`, (err) => {
+            if (err) Torch.kill(), setTimeout(StartProcess, Math.floor(Math.random() * (2000 - 500 + 1) + 500))
+        })
     })
 }
 
@@ -262,7 +266,7 @@ function Stop() {
 
 function Start() {
     manualStop = false
-    setTimeout(StartProcess, delay || 500)
+    setTimeout(StartProcess, Math.floor(Math.random() * (2000 - 500 + 1) + 500))
 }
 
 

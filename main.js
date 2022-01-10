@@ -14,8 +14,6 @@ var Torch, manualStop, delay, notification_channel, command_channel = false
 const fs = require('fs')
 
 const xml2js = require('xml2js')
-const xmlParser = new xml2js.Parser()
-const xmlBuilder = new xml2js.Builder()
 
 const { Client, Intents } = require('discord.js')
 var selectedIntents = []
@@ -260,6 +258,14 @@ async function StartProcess() {
 
         if (data.includes('Torch: Initializing server')) fs.unlink(`${config.dir}/BUSY`, (err) => {
             if (err) Torch.kill(), setTimeout(StartProcess, Math.floor(Math.random() * (2000 - 500 + 1) + 500))
+        })
+    })
+
+    Torch.on('exit', () => {
+        setTimeout(StartProcess, 8000)
+        config.scripts.OnStop.forEach(script => {
+            require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
+            console.log(`OnStop - ${script}`)
         })
     })
 }

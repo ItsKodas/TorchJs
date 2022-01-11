@@ -5,6 +5,7 @@ const Editor = require('./Modules/editor.js')
 const Discord = require('./Modules/discord.js')
 
 
+
 //!
 //! Prep Script
 //!
@@ -57,7 +58,8 @@ if (!fs.existsSync('config.json') && !config.config) {
             "OnStop": [],
             "OnLog": [],
             "OnCommand": []
-        }
+        },
+        "outputGameLog": true
     }, null, '\t'))
 }
 if (temp.config) config = JSON.parse(fs.readFileSync(temp.config, 'utf8'))
@@ -80,11 +82,11 @@ if (config.discord.token) {
         console.log(`Logged in as ${client.user.tag}!`)
         if (config.discord.notification_channel) notification_channel = await client.channels.fetch(config.discord.notification_channel), process.notification_channel = notification_channel
         if (config.discord.command_channel) command_channel = await client.channels.fetch(config.discord.command_channel), process.command_channel = command_channel
-        setTimeout(StartProcess, delay || 500)
+        setTimeout(Start, 1000)
 
         process.Discord = client
     })
-} else setTimeout(StartProcess, delay || 500)
+} else setTimeout(Start, 1000)
 
 if (config.scripts) if (config.scripts.path) {
     if (!fs.existsSync(`${config.scripts.path}/OnPrep`)) fs.mkdirSync(`${config.scripts.path}/OnPrep`)
@@ -202,17 +204,17 @@ async function StartProcess() {
     if (Torch) Torch.kill(), Torch = undefined
 
     if (fs.existsSync(`${config.dir}/BUSY`)) {
-        var Busy = fs.readFileSync(`${config.dir}/BUSY`, 'utf8')
-        var BusyTime = new Date(Busy)
+        var Busy = fs.readFileSync(`${config.dir}/BUSY`, 'utf8').split('\n')
+        var BusyTime = new Date(Busy[1])
         var CurrentTime = new Date()
 
         console.log(CurrentTime - BusyTime)
 
-        if (CurrentTime - BusyTime > 1000 * 10) console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`)
-        else return console.log('Another Torch Instance is Currently Preparing, trying again in 10 seconds...\n', Busy), setTimeout(StartProcess, 1000 * 10)
-    }
+        if (CurrentTime - BusyTime > 1000 * 15) return console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`), setTimeout(StartProcess, 3000), console.log('Retry 1')
 
-    fs.writeFileSync(`${config.dir}/BUSY`, Date().toLocaleUpperCase(), 'utf8')
+        if (Busy[0] !== config.name) return console.log(`Torch is currently handling "${Busy[0]}"`), setTimeout(StartProcess, 5000), console.log('Retry 2')
+
+    } else return fs.writeFileSync(`${config.dir}/BUSY`, `${config.name}\n${Date().toLocaleUpperCase()}`, 'utf8'), setTimeout(StartProcess, 1000 * 3), console.log('Retry 3')
 
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
@@ -227,7 +229,7 @@ async function StartProcess() {
 
     Torch.stdout.on('data', async data => {
         data = data.toString('utf8')
-        console.log(data)
+        if (config.outputGameLog || config.outputGameLog === undefined) console.log(data)
 
         config.scripts.OnLog.forEach(script => {
             require(`${config.scripts.path}/OnLog/${script}.js`)(data)
@@ -240,7 +242,7 @@ async function StartProcess() {
 
         if (data.includes('Server stopped.')) {
             Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
-            Torch.kill(), setTimeout(StartProcess, delay || 500)
+            Torch.kill(), setTimeout(StartProcess, 1000)
             config.scripts.OnStop.forEach(script => {
                 require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
                 console.log(`OnStop - ${script}`)
@@ -257,11 +259,12 @@ async function StartProcess() {
         }
 
         if (data.includes('Torch: Initializing server')) fs.unlink(`${config.dir}/BUSY`, (err) => {
-            if (err) Torch.kill(), setTimeout(StartProcess, Math.floor(Math.random() * (2000 - 500 + 1) + 500))
+            if (err) Torch.kill(), setTimeout(StartProcess, 5000), console.log(err)
         })
     })
 
     Torch.on('exit', () => {
+        if (manualStop) return
         setTimeout(StartProcess, 8000)
         config.scripts.OnStop.forEach(script => {
             require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
@@ -278,7 +281,7 @@ function Stop() {
 
 function Start() {
     manualStop = false
-    setTimeout(StartProcess, Math.floor(Math.random() * (2000 - 500 + 1) + 500))
+    StartProcess()
 }
 
 
@@ -328,7 +331,7 @@ client.on('messageCreate', msg => {
 
     if (args[0] === 'restart') {
         manualStop = true
-        Stop(), setTimeout(() => { Start() }, 10 * 1000)
+        Stop(), setTimeout(Start, 5000)
         msg.reply(`Restart Initiated for ${config.name}.`)
         Discord.Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')
     }

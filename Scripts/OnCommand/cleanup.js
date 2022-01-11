@@ -2,15 +2,16 @@ const Server = require('C:\\snapshot\\TorchJs\\main.js')
 const World = require('C:\\snapshot\\TorchJs\\Modules\\editor.js')
 const Discord = require('C:\\snapshot\\TorchJs\\Modules\\discord.js')
 
-module.exports = async (msg) => {
+const fs = require('fs')
+
+module.exports = async(msg) => {
 
     var auth = `${process.env.discord.prefix}reset ${process.env.name} [confirm]`
+    var auth2 = `${process.env.discord.prefix}reset allSectors [confirm]`
 
-    if (msg.content !== auth.toLowerCase()) return
-    if (msg.author.id !== "240786290600181761") return msg.reply('You do not have access to this command!')
+    if (msg.content !== auth.toLowerCase() && msg.content !== auth2.toLowerCase()) return
+    if (msg.author.id !== "240786290600181761") return msg.react('❌')
 
-
-    msg.channel.send('Stopping server to run cleanup script...')
     Discord.Notification(`⚠️ An Administrator has ran a world reset script on \`${process.env.name}\`, please standby.`)
 
     Server.Stop()
@@ -77,8 +78,15 @@ module.exports = async (msg) => {
         World.UpdateSandboxSBS(Sandbox)
     })
 
+    fs.readdirSync(`${process.env.dir}/${process.env.instance}/Saves/${process.env.world}`).forEach(file => {
+        if (file.includes('.vx2')) fs.unlinkSync(`${process.env.dir}/${process.env.instance}/Saves/${process.env.world}/${file}`)
+    })
+    fs.readdirSync('./Horizons/VoxelMaps').forEach(file => {
+        fs.copyFileSync(`./Horizons/VoxelMaps/${file}`, `${process.env.dir}/${process.env.instance}/Saves/${process.env.world}/${file}`)
+    })
 
-    Server.Start()
 
-    msg.reply('Cleanup script complete, server rebooting...')
+    setTimeout(() => { Server.Start() }, 5000)
+
+    msg.react('👍')
 }

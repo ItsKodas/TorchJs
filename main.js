@@ -208,7 +208,7 @@ async function StartProcess() {
         var BusyTime = new Date(Busy[1])
         var CurrentTime = new Date()
 
-        console.log(CurrentTime - BusyTime)
+        console.log(CurrentTime - BusyTime, manualStop)
 
         if (CurrentTime - BusyTime > 1000 * 15) return console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`), setTimeout(StartProcess, 3000)
 
@@ -242,7 +242,7 @@ async function StartProcess() {
 
         if (data.includes('Server stopped.')) {
             Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
-            Torch.kill(), setTimeout(StartProcess, 1000)
+            Torch.kill()
             config.scripts.OnStop.forEach(script => {
                 require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
                 console.log(`OnStop - ${script}`)
@@ -251,7 +251,7 @@ async function StartProcess() {
 
         if (data.includes('Generating minidump at')) {
             Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
-            Torch.kill(), setTimeout(StartProcess, 8000)
+            Torch.kill()
             config.scripts.OnStop.forEach(script => {
                 require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
                 console.log(`OnStop - ${script}`)
@@ -330,7 +330,6 @@ client.on('messageCreate', msg => {
     }
 
     if (args[0] === 'restart') {
-        manualStop = true
         Stop(), setTimeout(Start, 5000)
         msg.reply(`Restart Initiated for ${config.name}.`)
         Discord.Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')

@@ -210,11 +210,11 @@ async function StartProcess() {
 
         console.log(CurrentTime - BusyTime)
 
-        if (CurrentTime - BusyTime > 1000 * 15) return console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`), setTimeout(StartProcess, 3000), console.log('Retry 1')
+        if (CurrentTime - BusyTime > 1000 * 15) return console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`), setTimeout(StartProcess, 3000)
 
-        if (Busy[0] !== config.name) return console.log(`Torch is currently handling "${Busy[0]}"`), setTimeout(StartProcess, 5000), console.log('Retry 2')
+        if (Busy[0] !== config.name) return console.log(`Torch is currently handling "${Busy[0]}"`), setTimeout(StartProcess, 5000)
 
-    } else return fs.writeFileSync(`${config.dir}/BUSY`, `${config.name}\n${Date().toLocaleUpperCase()}`, 'utf8'), setTimeout(StartProcess, 1000 * 3), console.log('Retry 3')
+    } else return fs.writeFileSync(`${config.dir}/BUSY`, `${config.name}\n${Date().toLocaleUpperCase()}`, 'utf8'), setTimeout(StartProcess, 1000 * 3)
 
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')

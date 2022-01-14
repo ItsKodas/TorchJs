@@ -220,7 +220,7 @@ async function StartProcess() {
     await FilePrep(), console.log('Files Ready!')
 
     config.scripts.OnStart.forEach(script => {
-        require(`${config.scripts.path}/OnStart/${script}.js`)
+        require(`${config.scripts.path}/OnStart/${script}.js`)()
         console.log(`OnStart - ${script}`)
     })
 
@@ -240,7 +240,7 @@ async function StartProcess() {
 
         if (data.includes('Game ready')) Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
 
-        if (data.includes('Server stopped.')) {
+        if (data.includes('Server stopped.') || data.includes('Server hasnt yet restarted. Attempt force restart!')) {
             Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
             Torch.kill()
             config.scripts.OnStop.forEach(script => {

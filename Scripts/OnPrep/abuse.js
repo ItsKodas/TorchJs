@@ -57,6 +57,8 @@ async function QueDischarge() {
     if (Log.parent.includes('the following grids')) color = '#a126ff'
     if (Log.parent.includes('removed grid')) color = '#ff4238'
 
+    if (Log.parent.includes('teleported to')) Log.parent = `${Log.parent.split('teleported')[0]} has teleported, to prevent log abuse the coordinates will not be shown.`
+
     if (!Log.content) {
         Que.forEach((chunk, index) => {
             if (chunk.parent !== Log.parent) return

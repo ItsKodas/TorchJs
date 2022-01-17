@@ -220,7 +220,6 @@ async function StartProcess() {
         if (Busy[0] !== config.name) return console.log(`Torch is currently handling "${Busy[0]}"`), activeProcess = setTimeout(StartProcess, 5000)
 
     } else return fs.writeFileSync(`${config.dir}/BUSY`, `${config.name}\n${Date().toLocaleUpperCase()}`, 'utf8'), activeProcess = setTimeout(StartProcess, 1000 * 3)
-    activeProcess = setTimeout(StartProcess, 5000)
     clearTimeout(activeProcess)
 
     console.log('Preparing Files...')

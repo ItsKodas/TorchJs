@@ -235,7 +235,7 @@ async function StartProcess() {
 
     Torch.stdout.on('data', async data => {
         data = data.toString('utf8')
-        //if (config.outputGameLog || config.outputGameLog === undefined) console.log(data)
+        if (config.outputGameLog || config.outputGameLog === undefined) console.log(data)
 
         data.split('\n').forEach(line => {
             if (!line.trim()) return
@@ -247,9 +247,7 @@ async function StartProcess() {
             config.scripts.OnLog.forEach(script => {
                 require(`${config.scripts.path}/OnLog/${script}.js`)(log, time)
             })
-
-            if (config.outputGameLog || config.outputGameLog === undefined) console.log(log)
-
+            
 
 
             if (log === 'Keen: Game ready...') Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')

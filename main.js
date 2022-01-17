@@ -197,6 +197,7 @@ async function FilePrep() {
 //! Process Functions
 //!
 
+var activeProcess
 const spawn = require('child_process').spawn
 
 async function StartProcess() {
@@ -210,11 +211,17 @@ async function StartProcess() {
 
         console.log(CurrentTime - BusyTime, manualStop)
 
-        if (CurrentTime - BusyTime > 1000 * 15) return console.log('Busy time is outdated, terminating busy protocol.'), fs.unlinkSync(`${config.dir}/BUSY`), setTimeout(StartProcess, 3000)
+        if (CurrentTime - BusyTime > 1000 * 15) {
+            console.log('Busy time is outdated, terminating busy protocol.')
+            if (fs.existsSync(`${config.dir}/BUSY`)) fs.unlinkSync(`${config.dir}/BUSY`)
+            return activeProcess = setTimeout(StartProcess, 3000)
+        }
 
-        if (Busy[0] !== config.name) return console.log(`Torch is currently handling "${Busy[0]}"`), setTimeout(StartProcess, 5000)
+        if (Busy[0] !== config.name) return console.log(`Torch is currently handling "${Busy[0]}"`), activeProcess = setTimeout(StartProcess, 5000)
 
-    } else return fs.writeFileSync(`${config.dir}/BUSY`, `${config.name}\n${Date().toLocaleUpperCase()}`, 'utf8'), setTimeout(StartProcess, 1000 * 3)
+    } else return fs.writeFileSync(`${config.dir}/BUSY`, `${config.name}\n${Date().toLocaleUpperCase()}`, 'utf8'), activeProcess = setTimeout(StartProcess, 1000 * 3)
+    activeProcess = setTimeout(StartProcess, 5000)
+    clearTimeout(activeProcess)
 
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
@@ -229,7 +236,7 @@ async function StartProcess() {
 
     Torch.stdout.on('data', async data => {
         data = data.toString('utf8')
-        if (config.outputGameLog || config.outputGameLog === undefined) console.log(data)
+        //if (config.outputGameLog || config.outputGameLog === undefined) console.log(data)
 
         data.split('\n').forEach(line => {
             if (!line.trim()) return
@@ -242,9 +249,11 @@ async function StartProcess() {
                 require(`${config.scripts.path}/OnLog/${script}.js`)(log, time)
             })
 
+            if (config.outputGameLog || config.outputGameLog === undefined) console.log(log)
 
 
-            if (log === 'Keen: Game ready... ') Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
+
+            if (log === 'Keen: Game ready...') Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
 
             if (log === 'Torch: Server stopped.' || log === 'ALE_RestartWatchdog.RestartManager: Server hasnt yet restarted. Attempt force restart!') {
                 Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')

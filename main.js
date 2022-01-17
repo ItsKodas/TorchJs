@@ -229,42 +229,45 @@ async function StartProcess() {
 
     Torch.stdout.on('data', async data => {
         data = data.toString('utf8')
-        if (config.outputGameLog || config.outputGameLog === undefined) console.log(data)
-
-        config.scripts.OnLog.forEach(script => {
-            require(`${config.scripts.path}/OnLog/${script}.js`)(data)
-        })
-
 
         data.split('\n').forEach(line => {
-            line.split(']')
+            if (!line.trim()) return
+            line = line.trim()
 
+            var log = line.substring(line.indexOf(']') + 1).trim()
+            var time = line.split(']')[0].trim() + ']'
+            if (config.outputGameLog || config.outputGameLog === undefined) console.log(time + '\t' + log)
 
-        })
-
-
-        if (data.includes('Game ready')) Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
-
-        if (data.includes('Server stopped.') || data.includes('Server hasnt yet restarted. Attempt force restart!')) {
-            Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
-            Torch.kill()
-            config.scripts.OnStop.forEach(script => {
-                require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
-                console.log(`OnStop - ${script}`)
+            config.scripts.OnLog.forEach(script => {
+                require(`${config.scripts.path}/OnLog/${script}.js`)(log, time)
             })
-        }
 
-        if (data.includes('Generating minidump at')) {
-            Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
-            Torch.kill()
-            config.scripts.OnStop.forEach(script => {
-                require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
-                console.log(`OnStop - ${script}`)
+
+
+            if (log === 'Keen: Game ready... ') Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
+
+            if (log === 'Torch: Server stopped.' || log === 'ALE_RestartWatchdog.RestartManager: Server hasnt yet restarted. Attempt force restart!') {
+                Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
+                Torch.kill()
+                config.scripts.OnStop.forEach(script => {
+                    require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
+                    console.log(`OnStop - ${script}`)
+                })
+            }
+
+            if (log === 'Initializer: Keen broke the minidump, sorry.') {
+                Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
+                Torch.kill()
+                config.scripts.OnStop.forEach(script => {
+                    require(`${config.scripts.path}/OnStop/${script}.js`)(msg, client)
+                    console.log(`OnStop - ${script}`)
+                })
+            }
+
+            if (data.includes('Torch: Initializing server')) fs.unlink(`${config.dir}/BUSY`, (err) => {
+                if (err) Torch.kill(), setTimeout(StartProcess, 5000), console.log(err)
             })
-        }
 
-        if (data.includes('Torch: Initializing server')) fs.unlink(`${config.dir}/BUSY`, (err) => {
-            if (err) Torch.kill(), setTimeout(StartProcess, 5000), console.log(err)
         })
     })
 

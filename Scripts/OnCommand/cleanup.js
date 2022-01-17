@@ -6,6 +6,8 @@ const fs = require('fs')
 
 module.exports = async(msg) => {
 
+    if (msg.channel.id != command_channel.id) return
+
     var auth = `${process.env.discord.prefix}reset ${process.env.name} [confirm]`
     var auth2 = `${process.env.discord.prefix}reset allSectors [confirm]`
 

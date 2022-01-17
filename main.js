@@ -235,7 +235,12 @@ async function StartProcess() {
             require(`${config.scripts.path}/OnLog/${script}.js`)(data)
         })
 
-        if (data.includes('Chat:')) return
+
+        data.split('\n').forEach(line => {
+            line.split(']')
+
+
+        })
 
 
         if (data.includes('Game ready')) Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
@@ -292,13 +297,12 @@ function Start() {
 
 client.on('messageCreate', msg => {
     if (msg.author.bot) return
-    if (msg.channel.id != command_channel.id) return
 
     config.scripts.OnCommand.forEach(script => {
         require(`${config.scripts.path}/OnCommand/${script}.js`)(msg, client)
-        console.log(`OnCommand - ${script}`)
     })
 
+    if (msg.channel.id != command_channel.id) return
 
     var args = msg.content.toLowerCase().trim().split(' ')
     if (args[0].charAt(0) !== config.discord.prefix || args[1] !== config.name.toLowerCase()) return

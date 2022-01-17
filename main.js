@@ -229,6 +229,7 @@ async function StartProcess() {
 
     Torch.stdout.on('data', async data => {
         data = data.toString('utf8')
+        if (config.outputGameLog || config.outputGameLog === undefined) console.log(data)
 
         data.split('\n').forEach(line => {
             if (!line.trim()) return
@@ -236,7 +237,6 @@ async function StartProcess() {
 
             var log = line.substring(line.indexOf(']') + 1).trim()
             var time = line.split(']')[0].trim() + ']'
-            if (config.outputGameLog || config.outputGameLog === undefined) console.log(time + '\t' + log)
 
             config.scripts.OnLog.forEach(script => {
                 require(`${config.scripts.path}/OnLog/${script}.js`)(log, time)

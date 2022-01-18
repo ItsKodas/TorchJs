@@ -247,7 +247,7 @@ async function StartProcess() {
             config.scripts.OnLog.forEach(script => {
                 require(`${config.scripts.path}/OnLog/${script}.js`)(log, time)
             })
-            
+
 
 
             if (log === 'Keen: Game ready...') Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
@@ -270,7 +270,7 @@ async function StartProcess() {
                 })
             }
 
-            if (data.includes('Torch: Initializing server')) fs.unlink(`${config.dir}/BUSY`, (err) => {
+            if (log === 'Torch: Initializing server') activeProcess = fs.unlink(`${config.dir}/BUSY`, (err) => {
                 if (err) Torch.kill(), setTimeout(StartProcess, 5000), console.log(err)
             })
 

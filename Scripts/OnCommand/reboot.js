@@ -3,7 +3,7 @@ const Discord = require('C:\\snapshot\\TorchJs\\Modules\\discord.js')
 
 module.exports = async (msg) => {
 
-    if (msg.channel.id != command_channel.id) return
+    if (msg.channel.id != process.env.discord.command_channel.id) return
 
     var auth = `${process.env.discord.prefix}mass reboot [confirm]`
 

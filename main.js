@@ -159,7 +159,7 @@ async function FilePrep() {
         SEDLive.MyConfigDedicated.SessionSettings[0] = SEDTemplate.MyConfigDedicated.SessionSettings[0]
         SEDLive.MyConfigDedicated.Administrators[0] = SEDTemplate.MyConfigDedicated.Administrators[0]
         SEDLive.MyConfigDedicated.AutoUpdateEnabled[0] = 'true'
-        SEDLive.MyConfigDedicated.LoadWorld[0] = `${config.dir}/${config.instance}/Saves/${config.world}`
+        SEDLive.MyConfigDedicated['LoadWorld'] = [`${config.dir}/${config.instance}/Saves/${config.world}`]
         if (config.port) SEDLive.MyConfigDedicated.ServerPort[0] = config.port
         if (config.servername) SEDLive.MyConfigDedicated.ServerName[0] = config.servername
         if (config.worldname) SEDLive.MyConfigDedicated.WorldName[0] = config.worldname

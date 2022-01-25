@@ -55,7 +55,7 @@ module.exports = async (msg) => {
             fields: orbitalStations.concat(surfaceOutposts)
         }
 
-        msg.channel.send({ embeds: [embed] })
+        msg.reply({ embeds: [embed] })
             .then(msg2 => {
                 setTimeout(() => {
                     msg.delete().catch(err => console.log(err))

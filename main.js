@@ -132,8 +132,8 @@ async function FilePrep() {
 
 
     //? Logging
-    var NLog = await Editor.ParseXML(`${config.dir}/NLog.config`)
-    var NLogUser = await Editor.ParseXML(`${config.dir}/NLog-user.config`)
+    var NLog = await Editor.ParseXML(`${config.dir}\\NLog.config`)
+    var NLogUser = await Editor.ParseXML(`${config.dir}\\NLog-user.config`)
 
     NLog.nlog.targets[0].target[1].$.fileName = "Logs\\" + config.name + "\\Keen-${shortdate}.log"
     NLog.nlog.targets[0].target[2].$.fileName = "Logs\\" + config.name + "\\Torch-${shortdate}.log"
@@ -145,8 +145,8 @@ async function FilePrep() {
     NLogUser.nlog.targets[0].target[3].$.fileName = "Logs\\" + config.name + "\\Chat.log"
     NLogUser.nlog.targets[0].target[5].$.fileName = "Logs\\" + config.name + "\\patch.log"
 
-    fs.writeFileSync(`${config.dir}/NLog.config`, Editor.BuildXML(NLog)), console.log('NLog Config Updated!')
-    fs.writeFileSync(`${config.dir}/NLog-user.config`, Editor.BuildXML(NLogUser)), console.log('NLog-user Config Updated!')
+    fs.writeFileSync(`${config.dir}\\NLog.config`, Editor.BuildXML(NLog)), console.log('NLog Config Updated!')
+    fs.writeFileSync(`${config.dir}\\NLog-user.config`, Editor.BuildXML(NLogUser)), console.log('NLog-user Config Updated!')
 
 
     //? SEDedicated
@@ -159,7 +159,7 @@ async function FilePrep() {
         SEDLive.MyConfigDedicated.SessionSettings[0] = SEDTemplate.MyConfigDedicated.SessionSettings[0]
         SEDLive.MyConfigDedicated.Administrators[0] = SEDTemplate.MyConfigDedicated.Administrators[0]
         SEDLive.MyConfigDedicated.AutoUpdateEnabled[0] = 'true'
-        SEDLive.MyConfigDedicated['LoadWorld'] = [`${config.dir}/${config.instance}/Saves/${config.world}`]
+        SEDLive.MyConfigDedicated['LoadWorld'] = [`${config.dir}\\${config.instance}\\Saves\\${config.world}`]
         if (config.port) SEDLive.MyConfigDedicated.ServerPort[0] = config.port
         if (config.servername) SEDLive.MyConfigDedicated.ServerName[0] = config.servername
         if (config.worldname) SEDLive.MyConfigDedicated.WorldName[0] = config.worldname
@@ -204,7 +204,7 @@ async function StartProcess() {
 
     if (Torch) Torch.kill(), Torch = undefined
 
-    if (fs.existsSync(`${config.dir}/BUSY`)) {
+    if (fs.existsSync(`${config.dir}\\BUSY`)) {
         var Busy = fs.readFileSync(`${config.dir}/BUSY`, 'utf8').split('\n')
         var BusyTime = new Date(Busy[1])
         var CurrentTime = new Date()

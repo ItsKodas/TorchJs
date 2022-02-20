@@ -222,6 +222,21 @@ async function StartProcess() {
     } else return fs.writeFileSync(`${config.dir}/BUSY`, `${config.name}\n${Date().toLocaleUpperCase()}`, 'utf8'), activeProcess = setTimeout(StartProcess, 1000 * 3)
     clearTimeout(activeProcess)
 
+
+    var PortCheck = await spawn('powershell', [`Get-Process -Id (Get-NetUDPEndpoint -LocalPort ${config.port}).OwningProcess`])
+    PortCheck.stdout.on('data', data => {
+        var lines = data.toString().split('\r\n')
+        for (line of lines) if (line.includes('Torch.Server')) var Line = line
+        if (!Line) return
+        var filtered = []
+        Line.split(' ').forEach(space => { if (space) filtered.push(space) })
+        process.kill(parseInt(filtered[5]))
+        console.log(`Killed Process ${filtered[5]} (${filtered[7]}) running on port ${config.port}!`)
+        PortCheck.kill()
+    })
+    PortCheck.stderr.on('data', () => PortCheck.kill())
+
+
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
 
@@ -348,14 +363,6 @@ client.on('messageCreate', msg => {
         Discord.Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')
     }
 })
-
-
-
-function Loop() {
-    var temp = JSON.parse(fs.readFileSync(config.config, 'utf8'))
-    config.scripts = temp.scripts
-    process.env.scripts = temp.scripts
-} setInterval(Loop, 1000 * 30)
 
 
 

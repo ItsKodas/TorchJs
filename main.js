@@ -223,15 +223,10 @@ async function StartProcess() {
     clearTimeout(activeProcess)
 
 
-    var PortCheck = await spawn('powershell', [`Get-Process -Id (Get-NetUDPEndpoint -LocalPort ${config.port}).OwningProcess`])
+    var PortCheck = await spawn('powershell', [`$proc = Get-Process -Id (Get-NetUDPEndpoint -LocalPort ${config.port}).OwningProcess\n`, 'Write-Output $proc.Id\n'])
     PortCheck.stdout.on('data', data => {
-        var lines = data.toString().split('\r\n')
-        for (line of lines) if (line.includes('Torch.Server')) var Line = line
-        if (!Line) return
-        var filtered = []
-        Line.split(' ').forEach(space => { if (space) filtered.push(space) })
-        process.kill(parseInt(filtered[5]))
-        console.log(`Killed Process ${filtered[5]} (${filtered[7]}) running on port ${config.port}!`)
+        const PID = parseInt(data.toString().trim())
+        process.kill(PID), console.log(`Killed Process ${PID} running on port ${config.port}!`)
         PortCheck.kill()
     })
     PortCheck.stderr.on('data', () => PortCheck.kill())

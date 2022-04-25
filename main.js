@@ -3,6 +3,7 @@ console.log('Check out the creator at https://discord.gg/horizons or https://www
 
 const Editor = require('./Modules/editor.js')
 const Discord = require('./Modules/discord.js')
+const Rollback = require('./Modules/rollback.js')
 
 
 
@@ -151,10 +152,11 @@ async function FilePrep() {
 
     //? SEDedicated
     if (config.sandbox && config.world) {
-        var SEDTemplate = await Editor.ParseXML(config.sandbox)
-        var SEDLive = await Editor.GetSEDConfig()
-        var Sandbox = await Editor.GetSandboxSBC()
-        var SandboxConfig = await Editor.GetSandboxConfig()
+        let SEDTemplate = await Editor.ParseXML(config.sandbox).catch(err => console.log(err))
+        let SEDLive = await Editor.GetSEDConfig()
+        let Sandbox = await Editor.GetSandboxSBC()
+        let SandboxConfig = await Editor.GetSandboxConfig()
+        let SandboxSBS = await Editor.GetSandboxSBS()
 
         SEDLive.MyConfigDedicated.SessionSettings[0] = SEDTemplate.MyConfigDedicated.SessionSettings[0]
         SEDLive.MyConfigDedicated.Administrators[0] = SEDTemplate.MyConfigDedicated.Administrators[0]
@@ -187,6 +189,7 @@ async function FilePrep() {
         Editor.UpdateSEDConfig(SEDLive), console.log('SpaceEngineers-Dedicated Config Updated!')
         Editor.UpdateSandboxSBC(Sandbox), console.log('Sandbox Updated!')
         Editor.UpdateSandboxConfig(SandboxConfig), console.log('Sandbox Config Updated!')
+        Editor.UpdateSandboxSBS(SandboxSBS), console.log('Sandbox SBS Updated!')
     }
 
 }

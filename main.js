@@ -223,10 +223,8 @@ async function StartProcess() {
             .then(data => JSON.parse(data))
             .then(json => {
                 if (new Date() - new Date(json.timestamp) > 1000 * 60 * 2) return fs.writeFileSync(`${config.dir}\\BUSY`, BusyTemplate)
-
-                json.timestamp = new Date()
-
                 if (!json.que.includes(config.port || config.name)) return json.que.push(config.port || config.name), fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(json))
+                if (json.que <= 1) json.timestamp = new Date(), fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(json))
                 if (json.que[0] !== config.port && config.name) return console.log(`Que Position ${json.que.indexOf(config.port || config.name)}/${json.que.length - 1}`)
 
                 BusyJson = json

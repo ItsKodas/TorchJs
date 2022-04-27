@@ -3,7 +3,7 @@ console.log('Check out the creator at https://discord.gg/horizons or https://www
 
 const Editor = require('./Modules/editor.js')
 const Discord = require('./Modules/discord.js')
-const Rollback = require('./Modules/rollback.js')
+const Util = require('./Modules/util.js')
 
 
 
@@ -207,25 +207,38 @@ async function StartProcess() {
 
     if (Torch) Torch.kill(), Torch = undefined
 
-    if (fs.existsSync(`${config.dir}\\BUSY`)) {
-        var Busy = fs.readFileSync(`${config.dir}/BUSY`, 'utf8').split('\n')
-        var BusyTime = new Date(Busy[1])
-        var CurrentTime = new Date()
+    //? Busy Protocol
+    let isReady = false
+    let BusyJson = undefined
 
-        console.log(CurrentTime - BusyTime, manualStop)
+    while (isReady === false) {
 
-        if (CurrentTime - BusyTime > 1000 * 15) {
-            console.log('Busy time is outdated, terminating busy protocol.')
-            if (fs.existsSync(`${config.dir}/BUSY`)) fs.unlinkSync(`${config.dir}/BUSY`)
-            return activeProcess = setTimeout(StartProcess, 3000)
-        }
+        //? Busy Template
+        const BusyTemplate = JSON.stringify({
+            timestamp: Date.now(),
+            que: [config.port || config.name]
+        })
 
-        if (Busy[0] !== config.name) return console.log(`Torch is currently handling "${Busy[0]}"`), activeProcess = setTimeout(StartProcess, 5000)
+        await fs.promises.readFile(`${config.dir}\\BUSY`, 'utf-8')
+            .then(data => JSON.parse(data))
+            .then(json => {
+                if (new Date() - new Date(json.timestamp) > 1000 * 15) return fs.writeFileSync(`${config.dir}\\BUSY`, BusyTemplate)
 
-    } else return fs.writeFileSync(`${config.dir}/BUSY`, `${config.name}\n${Date().toLocaleUpperCase()}`, 'utf8'), activeProcess = setTimeout(StartProcess, 1000 * 3)
-    clearTimeout(activeProcess)
+                json.timestamp = new Date()
+
+                if (!json.que.includes(config.port || config.name)) return json.que.push(config.port || config.name), fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(json))
+                if (json.que[0] !== config.port && config.name) return console.log(`Que Position ${json.que.indexOf(config.port || config.name)}/${json.que.length - 1}`)
+
+                BusyJson = json
+
+                return isReady = true, console.log(`Que Position ${json.que.indexOf(config.port || config.name)}/${json.que.length - 1}`)
+            })
+            .catch(() => fs.writeFileSync(`${config.dir}\\BUSY`, BusyTemplate))
+        await Util.timer(3000)
+    }
 
 
+    //? Guarantee Process Port is Available & kill any processes using that port
     var PortCheck = await spawn('powershell', [`$proc = Get-Process -Id (Get-NetUDPEndpoint -LocalPort ${config.port}).OwningProcess\n`, 'Write-Output $proc.Id\n'])
     PortCheck.stdout.on('data', data => {
         const PID = parseInt(data.toString().trim())
@@ -235,17 +248,22 @@ async function StartProcess() {
     PortCheck.stderr.on('data', () => PortCheck.kill())
 
 
+    //? Prepare Torch for Launch
     console.log('Preparing Files...')
     await FilePrep(), console.log('Files Ready!')
 
+    //? Import OnStart Scripts
     config.scripts.OnStart.forEach(script => {
         require(`${config.scripts.path}/OnStart/${script}.js`)()
         console.log(`OnStart - ${script}`)
     })
 
+    //? Launch Torch
     console.log('Launching Instance...'), Discord.Notification(`⏳ ${config.name} is Starting...`, '#0fc1f2')
     Torch = spawn(`${config.dir}\\Torch.Server.exe`)
 
+
+    //? Critical Process Output Stream
     Torch.stdout.on('data', async data => {
         data = data.toString('utf8')
         if (config.outputGameLog || config.outputGameLog === undefined) console.log(data)
@@ -254,17 +272,21 @@ async function StartProcess() {
             if (!line.trim()) return
             line = line.trim()
 
+            //? Parse Logs
             var log = line.substring(line.indexOf(']') + 1).trim()
             var time = line.split(']')[0].trim() + ']'
 
+            //? Send Logs to each OnLog Script
             config.scripts.OnLog.forEach(script => {
                 require(`${config.scripts.path}/OnLog/${script}.js`)(log, time)
             })
 
 
 
+            //? Detect Torch Ready
             if (log === 'Keen: Game ready...') Discord.Notification(`✅ ${config.name} is Ready to Join!`, '#33d438')
 
+            //? Detect Safe Stoppage of Torch then Restart
             if (log === 'Torch: Server stopped.' || log === 'ALE_RestartWatchdog.RestartManager: Server hasnt yet restarted. Attempt force restart!') {
                 Discord.Notification(`⛔ ${config.name} has Stopped`, '#d43333')
                 Torch.kill()
@@ -274,6 +296,7 @@ async function StartProcess() {
                 })
             }
 
+            //? Detect Torch Crash
             if (log === 'Initializer: Keen broke the minidump, sorry.') {
                 Discord.Notification(`❌ ${config.name} has Crashed!`, '#d43333')
                 Torch.kill()
@@ -283,9 +306,12 @@ async function StartProcess() {
                 })
             }
 
-            if (log === 'Torch: Initializing server') activeProcess = fs.unlink(`${config.dir}/BUSY`, (err) => {
-                if (err) Torch.kill(), setTimeout(StartProcess, 5000), console.log(err)
-            })
+            //? Shift Que
+            if (log === 'Torch: Initializing server') {
+                BusyJson.que.shift()
+                if (BusyJson.que.length > 0) fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(BusyJson))
+                else fs.unlinkSync(`${config.dir}\\BUSY`)
+            }
 
         })
     })
@@ -300,12 +326,15 @@ async function StartProcess() {
     })
 }
 
+
+//? Kill Torch Process & Keep Stopped
 function Stop() {
     manualStop = true
     if (Torch) Torch.kill(), Torch = undefined
     Discord.Notification(`⛔ ${config.name} has been Stopped`, '#d43333')
 }
 
+//? Start a Manually Stopped Torch Process
 function Start() {
     manualStop = false
     StartProcess()

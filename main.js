@@ -209,7 +209,9 @@ async function StartProcess() {
 
     //? Busy Protocol
     let isReady = false
-    let BusyJson = undefined
+    let ValidateQue = undefined
+    
+    clearInterval(ValidateQue)
 
     while (isReady === false) {
 
@@ -222,17 +224,17 @@ async function StartProcess() {
         await fs.promises.readFile(`${config.dir}\\BUSY`, 'utf-8')
             .then(data => JSON.parse(data))
             .then(json => {
-                if (new Date() - new Date(json.timestamp) > 1000 * 60 * 2) return json.timestamp = new Date(), json.que.shift(), fs.writeFileSync(`${config.dir}\\BUSY`, json)
+                if (new Date() - new Date(json.timestamp) > 1000 * 60 * 5) return json.timestamp = new Date(), json.que.shift(), fs.writeFileSync(`${config.dir}\\BUSY`, json)
                 if (!json.que.includes(config.port)) return json.que.push(config.port), fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(json))
                 if (json.que <= 1) json.timestamp = new Date(), fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(json))
                 if (json.que[0] !== config.port && config.name) return console.log(`Que Position ${json.que.indexOf(config.port)}/${json.que.length - 1}`)
 
-                BusyJson = json
+                ValidateQue = setInterval(Util.ValidateQue, 5000)
 
                 return isReady = true, console.log(`Que Position ${json.que.indexOf(config.port)}/${json.que.length - 1}`)
             })
             .catch(() => fs.writeFileSync(`${config.dir}\\BUSY`, BusyTemplate))
-        await Util.timer(3000)
+        await Util.Timer(3000)
     }
 
 
@@ -280,31 +282,20 @@ async function StartProcess() {
             })
 
 
-
-            //? Que Checkpoints
-            const Checkpoints = ["SteamCMD: Checking for DS updates.", "SteamCMD: Success! App '298740' already up to date.", "PatchManager: Patching begins...", "PatchManager: Patching done"]
-            if (Checkpoints.includes(log)) {
-                await fs.promises.readFile(`${config.dir}\\BUSY`, 'utf-8')
-                    .then(data => JSON.parse(data))
-                    .then(json => {
-                        if (json.que[0] === config.port) {
-                            json.timestamp = new Date()
-                            fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(json))
-                        }
-                        else {
-                            console.log(`Que Skip Detected from ${json.que[0]}, Self Destructing to avert clash!`)
-                            return StartProcess()
-                        }
-                    })
-            }
-
             //? Shift Que
             if (log === 'Torch: Initializing server') {
-                BusyJson.que.shift()
-                if (BusyJson.que.length > 0) fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(BusyJson))
-                else fs.unlinkSync(`${config.dir}\\BUSY`)
-            }
+                clearInterval(ValidateQue)
+                fs.promises.readFile(`${config.dir}\\BUSY`, 'utf-8')
+                    .then(data => JSON.parse(data))
+                    .then(json => {
+                        if (json.que[0] !== config.port) return console.log(`Clash Detected, Aborting...`), StartProcess()
 
+                        json.que.shift()
+                        if (json.que.length > 0) fs.writeFileSync(`${config.dir}\\BUSY`, JSON.stringify(json))
+                        else fs.unlinkSync(`${config.dir}\\BUSY`)
+                    })
+                    .catch(() => console.log('No Que File found, skipping...'))
+            }
 
 
             //? Detect Torch Ready

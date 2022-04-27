@@ -222,7 +222,7 @@ async function StartProcess() {
         await fs.promises.readFile(`${config.dir}\\BUSY`, 'utf-8')
             .then(data => JSON.parse(data))
             .then(json => {
-                if (new Date() - new Date(json.timestamp) > 1000 * 15) return fs.writeFileSync(`${config.dir}\\BUSY`, BusyTemplate)
+                if (new Date() - new Date(json.timestamp) > 1000 * 60 * 2) return fs.writeFileSync(`${config.dir}\\BUSY`, BusyTemplate)
 
                 json.timestamp = new Date()
 

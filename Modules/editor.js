@@ -21,7 +21,8 @@ function ParseXML(dir) {
 }
 
 function BuildXML(obj) {
-    return xmlBuilder.buildObject(obj)
+    const XML = xmlBuilder.buildObject(obj)
+    return XML.replaceAll('&amp;', '&')
 }
 
 

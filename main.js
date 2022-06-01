@@ -365,8 +365,7 @@ client.on('messageCreate', msg => {
     if (msg.channel.id != command_channel.id) return
 
     var args = msg.content.toLowerCase().trim().split(' ')
-    if (args[0].charAt(0) !== config.discord.prefix || args[1] !== config.name.toLowerCase()) return
-    args[0] = args[0].substring(config.discord.prefix.length)
+    if (!args[0].startsWith(config.discord.prefix + config.name.toLowerCase()) && !args[0].startsWith(config.discord.prefix + '*')) return
 
     var guild = client.guilds.cache.get(msg.guild.id)
     var member = guild.members.cache.get(msg.author.id)
@@ -378,7 +377,7 @@ client.on('messageCreate', msg => {
     if (!isAdmin) return
 
 
-    if (args[0] === 'stop') {
+    if (args[1] === 'stop') {
         if (!Torch) return msg.reply(`${config.name} is already stopped!`)
         Stop()
         msg.reply(`${config.name} has been killed!`)
@@ -387,13 +386,13 @@ client.on('messageCreate', msg => {
         Torch = undefined
     }
 
-    if (args[0] === 'start') {
+    if (args[1] === 'start') {
         if (Torch) return msg.reply(`${config.name} is already running!`)
         Start()
         msg.reply(`${config.name} is starting...`)
     }
 
-    if (args[0] === 'restart') {
+    if (args[1] === 'restart') {
         Stop(), setTimeout(Start, 5000)
         msg.reply(`Restart Initiated for ${config.name}.`)
         Discord.Notification(`🔧 ${config.name} has been restarted by a Staff Member.`, '#a13ffc')

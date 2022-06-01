@@ -119,7 +119,7 @@ async function FilePrep() {
     TorchCFG.TorchConfig.Autostart[0] = 'true'
     TorchCFG.TorchConfig.RestartOnCrash[0] = 'false'
     TorchCFG.TorchConfig.NoGui[0] = 'true'
-    TorchCFG.TorchConfig.InstancePath[0] = `${config.dir}\\${config.instance}`
+    TorchCFG.TorchConfig.InstancePath[0] = `${config.instances || config.dir}\\${config.instance}`
 
     if (config.plugins) {
         var Plugins = []
@@ -162,7 +162,7 @@ async function FilePrep() {
         SEDLive.MyConfigDedicated.Administrators[0] = SEDTemplate.MyConfigDedicated.Administrators[0]
         SEDLive.MyConfigDedicated.AutoUpdateEnabled[0] = 'true'
         SEDLive.MyConfigDedicated.IgnoreLastSession[0] = 'true'
-        SEDLive.MyConfigDedicated['LoadWorld'] = [`${config.dir}\\${config.instance}\\Saves\\${config.world}`]
+        SEDLive.MyConfigDedicated['LoadWorld'] = [`${config.instances || config.dir}\\${config.instance}\\Saves\\${config.world}`]
         if (config.port) SEDLive.MyConfigDedicated.ServerPort[0] = config.port
         if (config.servername) SEDLive.MyConfigDedicated.ServerName[0] = config.servername
         if (config.worldname) SEDLive.MyConfigDedicated.WorldName[0] = config.worldname
@@ -366,7 +366,7 @@ client.on('messageCreate', msg => {
 
     var args = msg.content.toLowerCase().trim().split(' ')
     if (args[0].charAt(0) !== config.discord.prefix || args[1] !== config.name.toLowerCase()) return
-    args[0] = args[0].substring(1)
+    args[0] = args[0].substring(config.discord.prefix.length)
 
     var guild = client.guilds.cache.get(msg.guild.id)
     var member = guild.members.cache.get(msg.author.id)

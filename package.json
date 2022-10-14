@@ -1,28 +1,29 @@
 {
-    "name": "torchjs",
-    "version": "1.0.0",
-    "main": "main.js",
-    "author": "Jessica Lancelot",
-    "license": "ISC",
-    "dependencies": {
-        "discord.js": "^13.3.1",
-        "math3d": "^0.2.2",
-        "node-fetch": "^2.6.6",
-        "xml2js": "^0.4.23"
-    },
-    "devDependencies": {
-        "pkg": "^5.4.1"
-    },
-    "bin": {
-        "myapp": "./main.js"
-    },
-    "pkg": {
-        "assets": [
-            "node_modules/**/*",
-            "Modules/**/*"
-        ],
-        "targets": [
-            "node16-win-x64"
-        ]
-    }
+  "name": "torchjs",
+  "version": "2.0.0",
+  "main": "main.js",
+  "author": "Jessica Lancelot",
+  "license": "ISC",
+  "scripts": {
+    "dev:client": "cd ./Client && npx ts-node -r tsconfig-paths/register index.ts",
+    "dev:server": "cd ./Server && npx ts-node -r tsconfig-paths/register index.ts",
+    "build": "npm run build:client && npm run build:server && npx ts-node ./Util/package.ts",
+    "production:client": "node ./dist/Client",
+    "production:server": "node ./dist/Server",
+    "build:client": "npm run clean:client && tsc -p ./Client",
+    "build:server": "npm run clean:server && tsc -p ./Server",
+    "clean:client": "cd ./Client && tsc --build --clean",
+    "clean:server": "cd ./Server && tsc --build --clean"
+  },
+  "dependencies": {
+    "discord.js": "^13.3.1",
+    "math3d": "^0.2.2",
+    "mongodb": "^4.10.0",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.0",
+    "typescript": "^4.8.4"
+  }
 }

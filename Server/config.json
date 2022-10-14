@@ -1,0 +1,15 @@
+{
+    "server": {
+        "port": 3000
+    },
+
+    "mongo": {
+        "uri": "mongodb://127.0.0.1:27017",
+        "db": "TorchJs"
+    },
+
+    "discord": {
+        "id": "1030352703844532234",
+        "token": "MTAzMDM1MjcwMzg0NDUzMjIzNA.GzZe0C.OYUCT5NuNNGgShbFxZTSIJf2h-6Przwh2FbRU0"
+    }
+}

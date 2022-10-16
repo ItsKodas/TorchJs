@@ -16,7 +16,7 @@
     "clean:server": "cd ./Server && tsc --build --clean"
   },
   "dependencies": {
-    "discord.js": "^13.3.1",
+    "discord.js": "^14.6.0",
     "math3d": "^0.2.2",
     "mongodb": "^4.10.0",
     "xml2js": "^0.4.23"

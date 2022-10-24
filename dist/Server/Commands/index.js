@@ -1,8 +1,8 @@
 "use strict";
-//? Dependencies
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var discord_1 = __importDefault(require("@lib/discord"));
-(0, discord_1.default)();
+exports.ping = void 0;
+var ping_1 = require("./ping");
+Object.defineProperty(exports, "ping", { enumerable: true, get: function () { return __importDefault(ping_1).default; } });

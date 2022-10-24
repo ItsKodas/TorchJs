@@ -12,8 +12,8 @@
     "production:server": "node ./dist/Server",
     "build:client": "npm run clean:client && tsc -p ./Client",
     "build:server": "npm run clean:server && tsc -p ./Server",
-    "clean:client": "cd ./Client && tsc --build --clean",
-    "clean:server": "cd ./Server && tsc --build --clean"
+    "clean:client": "cd ./Client && npx tsc --build --clean",
+    "clean:server": "cd ./Server && npx tsc --build --clean"
   },
   "dependencies": {
     "discord.js": "^14.6.0",

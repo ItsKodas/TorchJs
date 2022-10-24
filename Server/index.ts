@@ -1,5 +1,8 @@
 //? Dependencies
 
-import Client from '@lib/discord'
+import Mongo from '@lib/mongodb'
+import Discord from '@lib/discord'
 
-Client()
+
+Mongo()
+Discord()

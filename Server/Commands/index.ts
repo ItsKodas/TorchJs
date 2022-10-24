@@ -1,1 +1,1 @@
-export { default as ping } from './ping'
+export { default as set } from './set'

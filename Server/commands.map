@@ -1,0 +1,65 @@
+# Setup Commands #
+
+/set code [unique security code]
+
+
+
+# General Commands #
+
+/start [server options]
+/stop [server options]
+/restart [server options]
+
+/ban [steamid] [length of ban in hours]
+
+
+
+# Server Management Commands #
+
+/manage
+    - server
+        - create [server name]
+        - delete [server name options]
+        - edit [server name options]
+
+        + name [name (display current server name as option)]
+        + worldname [name (display current default world name as option)]
+        + maxplayers [number]
+        + password [string (MD5 Encryption?)]
+        + port [number]
+
+    - world
+        - create [server options] [world name]
+        - delete [server options] [world options]
+        - upload [server options] [world name] [ZIP File]
+
+    - mods
+        - createpack [pack name] [workshop collection id (optional)]
+        - deletepack [pack options]
+        - bulkedit [pack options] [bulkmod collection]
+        - list [pack options]
+        - add [mod pack options] [mod id] [mod name (optional? steamcmd?)]
+        - remove [mod pack options] [mod options]
+        - order [mod pack options] [mod options] [index]
+
+        (Check for mod dependencies?)
+
+    - plugins
+        - createpack [pack name]
+        - deletepack [pack options]
+        - bulkedit [pack options] [bulkplugin collection]
+        - list [pack options]
+        - add [plugin pack options] [plugin options from torchapi]
+        - remove [plugin pack options] [plugin options]
+        - order [plugin pack options] [plugin options] [index]
+    
+    - configs
+        - server
+            - list [server options]
+            - pull [file name options]
+            - push [file name options] [file for upload]
+
+        - world
+            - list [world options]
+            - pull [file name options]
+            - push [file name options] [file for upload]

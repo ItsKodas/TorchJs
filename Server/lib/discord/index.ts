@@ -9,6 +9,8 @@ import GlobalCommands from '@lib/discord/globalCommands'
 
 import * as _commands from '../../Commands'
 
+import DiscoverGuilds, { UpdateGuild, DeleteGuild } from '@lib/discord/guildUpdates'
+
 
 
 //? Client
@@ -37,7 +39,14 @@ export default function Client(): Promise<Discord.Client> {
 
                 //? Register Global Commands
                 PushCommands(GlobalCommands)
-                
+
+
+                //? Discover Guilds
+                DiscoverGuilds()
+                    .then(console.info)
+                    .catch(console.error)
+
+
 
                 //? Interaction Handler
                 const Commands: any = _commands
@@ -49,6 +58,11 @@ export default function Client(): Promise<Discord.Client> {
                         else console.log(`Interaction "${interaction.id}" does not exist on the Server!`)
                     }
                 })
+
+
+                //? Guilds Updates
+                _client.on('guildCreate', (guild) => UpdateGuild(guild))
+                _client.on('guildDelete', (guild) => DeleteGuild(guild.id))
 
             })
         } else resolve(_client)

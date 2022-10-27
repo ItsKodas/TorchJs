@@ -6,6 +6,7 @@ const ProductionPackage = {
     version: Package.version,
     description: Package.description,
     main: 'index.js',
+    type: 'module',
     repository: Package.repository,
     dependencies: Package.dependencies
 }

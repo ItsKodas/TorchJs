@@ -1,6 +1,9 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "ES2022",
+		"module": "ES2022",
+		"moduleResolution": "node",
+		
 		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,
@@ -12,7 +15,9 @@
 
 		"baseUrl": ".",
 		"paths": {
-			"@lib/*": ["lib/*"]
+			"@lib/*": ["lib/*"],
+			"@types/*": ["types/*"],
+			"@routes/*": ["routes/*"]
 		}
 	},
 

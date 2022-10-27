@@ -9,6 +9,7 @@ import fs from "fs"
 interface Model {
     server: {
         port: number
+        password?: string
     }
 
     mongo: {

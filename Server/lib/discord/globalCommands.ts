@@ -14,9 +14,6 @@ const Commands = [
         .addSubcommand(subcommand => subcommand.setName('code').setDescription('Set the Security Code for your Community')
             .addStringOption(option => option.setName('code').setDescription('Security Code - Should be reasonably secure').setRequired(true))
         )
-        .addSubcommand(subcommand => subcommand.setName('next').setDescription('uwu')
-            .addStringOption(option => option.setName('munch').setDescription('cock').setRequired(true))
-        )
 
 
 

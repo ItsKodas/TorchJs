@@ -1,13 +1,23 @@
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, Guild } from "discord.js"
+
+import { Collection } from "@lib/mongodb"
+
+import { UpdateGuild } from '@lib/discord/guildUpdates'
 
 
 
 //? Command
 
-export default (interaction: ChatInputCommandInteraction<CacheType>) => {
+export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
-    console.log(interaction.options.getString('code'))
+    const Code = interaction.options.getString('code')
+    const Communities = await Collection('communities')
 
+    const Community = await Communities.findOne({ id: interaction.guildId }) || await UpdateGuild(interaction.guild as Guild)
+
+    Communities.updateOne({ id: Community.id }, { $set: { ...Community, code: Code } }, { upsert: true })
+        .then(() => interaction.reply({ content: `Community Security Code has been successfully set to: \`${Code}\``, ephemeral: true }))
+        .catch(() => interaction.reply({ content: 'An error occurred while setting the Community Security Code', ephemeral: true }))
 }

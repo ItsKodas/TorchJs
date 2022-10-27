@@ -7,7 +7,7 @@ import * as Discord from "discord.js"
 import { PushCommands } from "@lib/discord/register"
 import GlobalCommands from '@lib/discord/globalCommands'
 
-import * as _commands from '../../Commands'
+import * as _commands from '../../commands'
 
 import DiscoverGuilds, { UpdateGuild, DeleteGuild } from '@lib/discord/guildUpdates'
 
@@ -61,7 +61,7 @@ export default function Client(): Promise<Discord.Client> {
 
 
                 //? Guilds Updates
-                _client.on('guildCreate', (guild) => UpdateGuild(guild))
+                _client.on('guildCreate', (guild) => { UpdateGuild(guild) })
                 _client.on('guildDelete', (guild) => DeleteGuild(guild.id))
 
             })

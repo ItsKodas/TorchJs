@@ -1,6 +1,9 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "ES2022",
+		"module": "ES2022",
+		"moduleResolution": "node",
+		
 		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,

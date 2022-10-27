@@ -20,10 +20,10 @@ export default function DiscoverGuilds(): Promise<string> {
 
 
         Guilds.forEach(guild => {
-            const data = {
+            const data: Community = {
                 id: guild.id,
                 name: guild.name,
-                icon: guild.iconURL({ size: 256, forceStatic: true })
+                icon: guild.iconURL({ size: 256, forceStatic: true }) as string
             }
 
             Communities.updateOne({ id: data.id }, { $set: data }, { upsert: true })
@@ -35,18 +35,24 @@ export default function DiscoverGuilds(): Promise<string> {
 }
 
 
-export async function UpdateGuild(guild: Discord.Guild) {
-    const Communities = await Collection('communities')
+export function UpdateGuild(guild: Discord.Guild): Promise<Community> {
+    return new Promise(async (resolve, reject) => {
 
-    const data = {
-        id: guild.id,
-        name: guild.name,
-        icon: guild.iconURL({ size: 256, forceStatic: true })
-    }
+        const Communities = await Collection('communities')
 
-    Communities.updateOne({ id: data.id }, { $set: data }, { upsert: true })
-        .then(() => console.info(`Added Guild "${data.id}"`))
-        .catch(console.error)
+        const data: Community = {
+            id: guild.id,
+            name: guild.name,
+            icon: guild.iconURL({ size: 256, forceStatic: true }) as string
+        }
+
+        await Communities.updateOne({ id: data.id }, { $set: data }, { upsert: true })
+            .then(() => console.info(`Added Guild "${data.id}"`))
+            .catch(console.error)
+
+        resolve(data)
+
+    })
 }
 
 

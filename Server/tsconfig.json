@@ -15,7 +15,6 @@
 
 		"baseUrl": ".",
 		"paths": {
-			"*": ["node_modules/*"],
 			"@lib/*": ["lib/*"],
 			"@types/*": ["types/*"],
 			"@api/*": ["api/*"]

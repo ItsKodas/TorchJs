@@ -79,3 +79,6 @@ typings/
 config.json
 Server/config.json
 Client/config.json
+
+#Dist
+dist

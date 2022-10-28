@@ -2,7 +2,7 @@
 
 import Config from '@lib/config'
 
-const { REST, Routes } = require('discord.js')
+import { REST, Routes } from 'discord.js'
 
 
 
@@ -19,7 +19,7 @@ export async function PushCommands(commands: any[], type?: 'global' | 'guild', g
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands${type == 'guild' && guildId ? `for guild "${guildId}"` : ''}.`)
 
-        const data = await rest.put(
+        const data: any = await rest.put(
             type == 'guild' && guildId ? Routes.applicationGuildCommands(Config.discord.id, guildId) : Routes.applicationCommands(Config.discord.id),
             { body: commands },
         )

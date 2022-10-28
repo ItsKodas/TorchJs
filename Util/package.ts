@@ -8,6 +8,7 @@ const ProductionPackage = {
     main: 'index.js',
     type: 'module',
     repository: Package.repository,
+    start: "node --experimental-specifier-resolution=node .",
     dependencies: Package.dependencies
 }
 

@@ -10,10 +10,8 @@
     "build": "npm run build:client && npm run build:server && npx ts-node ./Util/package.ts",
     "production:client": "node ./dist/Client",
     "production:server": "node ./dist/Server",
-    "build:client": "npm run clean:client && tsc -p ./Client",
-    "build:server": "npm run clean:server && tsc -p ./Server",
-    "clean:client": "cd ./Client && npx tsc --build --clean",
-    "clean:server": "cd ./Server && npx tsc --build --clean"
+    "build:client": "npx tsc -p ./Client",
+    "build:server": "npx tsc -p ./Server"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
@@ -26,6 +24,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.14",
+    "replace-tsconfig-paths": "^1.2.6",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.0",
     "typescript": "^4.8.4"

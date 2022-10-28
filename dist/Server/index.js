@@ -1,8 +1,8 @@
-"use strict";
 //? Dependencies
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var discord_1 = __importDefault(require("@lib/discord"));
-(0, discord_1.default)();
+import Mongo from '@lib/mongodb';
+import Discord from '@lib/discord';
+import API from './api';
+//? Initialize
+Mongo();
+Discord();
+API();

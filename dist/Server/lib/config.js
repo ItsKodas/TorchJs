@@ -1,10 +1,5 @@
-"use strict";
 //? Dependencies
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var fs_1 = __importDefault(require("fs"));
+import fs from "fs";
 //? Module
-var Config = JSON.parse(fs_1.default.readFileSync("./config.json", "utf8"));
-exports.default = Config;
+const Config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
+export default Config;

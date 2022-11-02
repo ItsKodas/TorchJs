@@ -8,6 +8,6 @@ import type { Request, Response } from 'express'
 
 export default function (req: Request, res: Response) {
 
-    console.log(req)
+    console.log(req.query, req.body)
 
 }

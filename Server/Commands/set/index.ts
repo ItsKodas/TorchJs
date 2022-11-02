@@ -2,7 +2,6 @@
 
 import { ChatInputCommandInteraction, CacheType } from "discord.js"
 
-
 import * as _subcommands from '.'
 const Subcommands: any = _subcommands
 
@@ -23,4 +22,5 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
 
 //? Subcommands
 
-export { default as code } from './code'
+export { default as alerts } from './alerts'
+export { default as password } from './password'

@@ -13,12 +13,26 @@ declare global {
 
     interface Community {
         _id?: ObjectId
-        
+
         id: string
         name: string
         icon: string
 
-        code?: string
+        password?: string
+
+        alerts?: {
+            channel: string
+            roles: [
+                string,
+                string,
+                string
+            ]
+            users: [
+                string,
+                string,
+                string
+            ]
+        }
     }
 
 }

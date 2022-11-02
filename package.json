@@ -10,7 +10,7 @@
     "build": "npm run build:client && npm run build:server && npx ts-node ./Util/package.ts",
     "production:client": "cd dist/Client && node --experimental-specifier-resolution=node index.js",
     "production:server": "cd dist/Server && node --experimental-specifier-resolution=node index.js",
-    "build:client": "npx tsc -p ./Client/tsconfig.json && npx tscpaths -p Server/tsconfig.json -s ./Server -o ./dist/Client",
+    "build:client": "npx tsc -p ./Client/tsconfig.json && npx tscpaths -p Client/tsconfig.json -s ./Client -o ./dist/Client",
     "build:server": "npx tsc -p ./Server/tsconfig.json && npx tscpaths -p Server/tsconfig.json -s ./Server -o ./dist/Server"
   },
   "dependencies": {

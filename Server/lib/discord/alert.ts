@@ -9,7 +9,7 @@ import { APIEmbed, JSONEncodable, BaseMessageOptions } from 'discord.js'
 
 //? Alert
 
-export default async (guild: string, embeds: BaseMessageOptions['embeds']) => {
+export default async (guild: string, embeds: BaseMessageOptions['embeds'], components?: BaseMessageOptions['components']) => {
 
     const Community = await GetCommunity(guild)
     if (!Community?.alerts?.channel) return
@@ -30,6 +30,6 @@ export default async (guild: string, embeds: BaseMessageOptions['embeds']) => {
     else Mentions = [...Roles, ...Users].join(' ')
 
 
-    channel.send({ content: Mentions, embeds: embeds }).catch(err => console.error(`Failed to Send Alert to ${channel.name} in ${channel.guild.name}:\n${err}`))
+    channel.send({ content: Mentions, embeds, components }).catch(err => console.error(`Failed to Send Alert to ${channel.name} in ${channel.guild.name}:\n${err}`))
 
 }

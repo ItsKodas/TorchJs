@@ -18,7 +18,10 @@ declare global {
         name: string
         icon: string
 
-        password?: string
+        password?: {
+            hash: string
+            salt: string
+        }
 
         alerts?: {
             channel: string

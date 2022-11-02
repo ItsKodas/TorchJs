@@ -1,8 +1,10 @@
 //? Dependencies
 
 import Mongo from '@lib/mongodb'
-import Discord from '@lib/discord'
+import Discord, { Channel } from '@lib/discord'
 import API from './api'
+
+import { Client } from 'discord.js'
 
 
 

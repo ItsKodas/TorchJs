@@ -8,7 +8,7 @@ import { Collection } from "."
 export default async (guild: string) => {
 
     const Communities = await Collection('communities')
-    const Community = await Communities.findOne({ id: guild })
+    const Community = await Communities.findOne({ id: guild }) || null
 
     return Community as Community
 

@@ -3,7 +3,13 @@
 import app from '@lib/express'
 
 import * as Routes from '.'
+import * as Middleware from './middleware'
 
+
+
+//? Middleware
+
+app.use(Middleware.auth)
 
 
 //? Routes

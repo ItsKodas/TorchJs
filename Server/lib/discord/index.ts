@@ -8,8 +8,15 @@ import { PushCommands } from "@lib/discord/register"
 import GlobalCommands from '@lib/discord/globalCommands'
 
 import * as _commands from '../../commands'
+import * as _buttons from '../../interfaces/buttons'
 
 import DiscoverGuilds, { UpdateGuild, DeleteGuild } from '@lib/discord/guildUpdates'
+
+
+//? Import Renames
+
+const Commands: any = _commands
+const Buttons: any = _buttons
 
 
 
@@ -49,12 +56,12 @@ export default function Client(): Promise<Discord.Client> {
 
 
                 //? Interaction Handler
-                const Commands: any = _commands
                 _client.on('interactionCreate', interaction => {
                     try {
                         if (interaction.isChatInputCommand()) Commands[interaction.commandName](interaction)
+                        if (interaction.isButton()) Buttons[interaction.customId.split('.')[0]](interaction, interaction.customId.split('.'))
                     } catch {
-                        if (interaction.isChatInputCommand()) interaction.reply({ content: 'This Command does not exist on the Server!', ephemeral: true })
+                        if (interaction.isChatInputCommand() || interaction.isButton()) interaction.reply({ content: 'This Command does not exist on the Server!', ephemeral: true })
                         else console.log(`Interaction "${interaction.id}" does not exist on the Server!`)
                     }
                 })

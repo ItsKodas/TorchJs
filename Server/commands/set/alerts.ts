@@ -6,6 +6,9 @@ import { Collection } from "@lib/mongodb"
 
 import { UpdateGuild } from '@lib/discord/guildUpdates'
 
+import { EmbedBuilder } from "discord.js"
+
+import * as Colors from '@lib/discord/colors'
 import Alert from '@lib/discord/alert'
 
 
@@ -33,7 +36,12 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
     Communities.updateOne({ id: Community.id }, { $set: { ...Community, alerts: Data } }, { upsert: true })
         .then(() => {
             interaction.reply({ content: `Network Alerts has been successfully set to: ${Channel}`, ephemeral: true })
-            Alert(Community.id, [{ title: '🌐 Network Alerts', description: `>>> Network Alerts has been successfully set to this channel!` }])
+            Alert(Community.id, [
+                new EmbedBuilder()
+                    .setTitle('🌐 Network Alerts')
+                    .setDescription('>>> Network Alerts have been linked to this channel')
+                    .setColor(Colors.info)
+            ])
         })
         .catch(() => interaction.reply({ content: 'An error occurred while setting the Community Alerts Channel', ephemeral: true }))
 }

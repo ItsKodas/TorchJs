@@ -5,6 +5,7 @@ import type { Request, Response } from 'express'
 import { Collection } from '@lib/mongodb'
 import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js'
 
+import * as Colors from '@lib/discord/colors'
 import Alert from '@lib/discord/alert'
 
 
@@ -14,20 +15,39 @@ import Alert from '@lib/discord/alert'
 export default async function (req: Request, res: Response) {
 
     const _shard = req.headers.shard
+    const _community = req.headers.community
 
 
     const Shards = await Collection('shards')
-    const Shard = await Shards.findOne({ id: _shard })
+    const Shard = await Shards.findOne({ id: _shard, community: _community })
 
+    //? Register Shard in Database if it doesn't exist
     if (!Shard) {
-        Alert(req.headers.community as string, [ShardRegisterEmbed(_shard as string, req.ip as string)], [ShardRegisterComponents()])
+        const ShardData: Shard = {
+            id: _shard as string,
+            enabled: false,
+            community: req.headers.community as string,
+            status: {
+                state: 'offline',
+                heartbeat: new Date()
+            }
+        }
 
-        return res.status(404).json({ error: 'This Shard does not Exist, please register it via Discord' })
+        const ShardId = await Shards.insertOne(ShardData).then(document => document.insertedId)
+
+        Alert(req.headers.community as string, [ShardRegisterEmbed(_shard as string, req.ip as string)], [ShardRegisterComponents(ShardId)])
+
+        return res.status(404).json({ error: 'This Shard does not currently exist on our Database, please confirm it via Discord within the set "alerts" channel' })
     }
 
+    if (!Shard.enabled) return res.status(401).json({ error: 'This Shard is currently disabled, please enable it via Discord' })
 
-    return res.json({ message: `Successfully Established a Connection with Shard '${Shard.id}'` })
 
+    //? Update Shard Status
+    Shards.updateOne({ id: _shard, community: _community }, { $set: { 'status.state': 'online', 'status.heartbeat': new Date() } })
+
+
+    return res.status(200).json({ message: `Successfully Established a Connection with Shard '${Shard.id}'` })
 }
 
 
@@ -35,16 +55,17 @@ export default async function (req: Request, res: Response) {
 //? Embeds
 
 const ShardRegisterEmbed: any = (shard: string, ip: string) => new EmbedBuilder()
-    .setTitle('Shard Registration')
-    .setDescription(`A new Shard has been registered, please verify it's authenticity.`)
+    .setTitle('Shard Registration Request')
+    .setDescription(`A New Shard has been Registered, please confirm its creation to enable it.`)
+    .setColor(Colors.warning)
     .setFields([
         {
-            name: 'Shard ID',
+            name: 'Shard Identifier',
             value: `\`${shard}\``,
             inline: true
         },
         {
-            name: 'Shard System IP',
+            name: 'System Address',
             value: `\`${ip}\``,
             inline: true
         }
@@ -54,15 +75,15 @@ const ShardRegisterEmbed: any = (shard: string, ip: string) => new EmbedBuilder(
 
 //? Components
 
-const ShardRegisterComponents: any = () => new ActionRowBuilder()
+const ShardRegisterComponents: any = (id: string) => new ActionRowBuilder()
     .setComponents([
         new ButtonBuilder()
-            .setCustomId('shard.register')
-            .setLabel('Register')
+            .setCustomId(`shard.register.${id}`)
+            .setLabel('Confirm')
             .setStyle(ButtonStyle.Success),
 
         new ButtonBuilder()
-            .setCustomId('shard.cancel')
+            .setCustomId(`shard.cancel.${id}`)
             .setLabel('Cancel')
             .setStyle(ButtonStyle.Danger)
     ])

@@ -5,6 +5,8 @@ import * as Discord from "discord.js"
 import Client from '@lib/discord'
 import { Collection } from '@lib/mongodb'
 
+import RegisterCommands from '@lib/discord/commands'
+
 
 
 //? Exports
@@ -27,6 +29,8 @@ export default function DiscoverGuilds(): Promise<string> {
             }
 
             Communities.updateOne({ id: data.id }, { $set: data }, { upsert: true })
+
+            RegisterCommands(guild.id)
         })
 
         resolve(`Discovered ${Guilds.size} Guilds!`)

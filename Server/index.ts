@@ -19,8 +19,6 @@ Mongo().then(() => {
     setInterval(CycleShards, 1000 * 60 * 5)
 })
 
-Discord().then(() => {
-    Commands('610606066451087370')
-})
+Discord()
 
 API()

@@ -3,11 +3,11 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js"
 
 import { Collection } from '@lib/mongodb'
+import { Guild } from '@lib/discord'
 
-import Register from '@lib/discord/register'
 
-
-import Manage from './manage'
+import _server from './server'
+import _world from './world'
 
 
 
@@ -21,13 +21,7 @@ export default async (community: string) => {
     const ShardChoices: { name: string, value: string }[] = Shards.map(shard => ({ name: shard.name, value: shard.id }))
 
 
-
-    Register([Manage(ShardChoices)])
+    const Community = await Guild(community)
+    Community.commands.set([_server(ShardChoices), _world(ShardChoices)])
 
 }
-
-
-
-//? Exports
-
-export * as manage from './manage'

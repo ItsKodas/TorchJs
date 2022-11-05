@@ -15,6 +15,7 @@ declare global {
         _id?: ObjectId
 
         id: string
+        name: string
         enabled: boolean
         community: string
         

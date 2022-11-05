@@ -14,8 +14,11 @@ import Alert from '@lib/discord/alert'
 
 export default async function (req: Request, res: Response) {
 
-    const _shard = req.headers.shard
-    const _community = req.headers.community
+    const _shard = req.headers.shard as string
+    const _community = req.headers.community as string
+
+
+    if (_shard.match(/[^a-z0-9 _()]/)) return res.status(400).json({ error: 'Shard ID must only contain lowercase letters, numbers, and underscores' })
 
 
     const Shards = await Collection('shards')
@@ -25,6 +28,7 @@ export default async function (req: Request, res: Response) {
     if (!Shard) {
         const ShardData: Shard = {
             id: _shard as string,
+            name: _shard as string,
             enabled: false,
             community: req.headers.community as string,
             status: {

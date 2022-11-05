@@ -27,7 +27,7 @@
         + maxplayers [number]
         + password [string (MD5 Encryption?)]
         + port [number]
-        + save [save options]
+        + world [save options]
 
     - world
         - create [server options] [world name]

@@ -8,6 +8,9 @@ import API from './api'
 import { CycleShards } from '@lib/common/heartbeat'
 
 
+import Commands from '@lib/discord/commands'
+
+
 
 //? Initialize
 
@@ -16,6 +19,8 @@ Mongo().then(() => {
     setInterval(CycleShards, 1000 * 60 * 5)
 })
 
-Discord()
+Discord().then(() => {
+    Commands('610606066451087370')
+})
 
 API()

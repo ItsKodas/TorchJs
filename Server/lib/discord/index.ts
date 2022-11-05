@@ -45,7 +45,7 @@ export default function Client(): Promise<Discord.Client> {
 
 
                 //? Register Global Commands
-                PushCommands(GlobalCommands)
+                // PushCommands(GlobalCommands)
 
 
                 //? Discover Guilds

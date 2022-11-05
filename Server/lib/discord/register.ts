@@ -8,7 +8,7 @@ import { REST, Routes } from 'discord.js'
 
 //? REST API
 
-const rest = new REST({ version: '10' }).setToken(Config.discord.token)
+const rest = new REST({ version: '10', timeout: 10000 }).setToken(Config.discord.token)
 
 
 
@@ -17,7 +17,7 @@ const rest = new REST({ version: '10' }).setToken(Config.discord.token)
 export async function PushCommands(commands: any[], type?: 'global' | 'guild', guildId?: string) {
 
     try {
-        console.log(`Started refreshing ${commands.length} application (/) commands${type == 'guild' && guildId ? `for guild "${guildId}"` : ''}.`)
+        console.log(`Started refreshing ${commands.length} application (/) commands ${type == 'guild' && guildId ? `for guild "${guildId}"` : ''}.`)
 
         const data: any = await rest.put(
             type == 'guild' && guildId ? Routes.applicationGuildCommands(Config.discord.id, guildId) : Routes.applicationCommands(Config.discord.id),
@@ -30,3 +30,5 @@ export async function PushCommands(commands: any[], type?: 'global' | 'guild', g
     }
 
 }
+
+export default PushCommands

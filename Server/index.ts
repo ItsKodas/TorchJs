@@ -8,7 +8,7 @@ import API from './api'
 import { CycleShards } from '@lib/common/heartbeat'
 
 
-import Commands from '@lib/discord/commands'
+import Plugins from '@lib/torchapi/plugins'
 
 
 

@@ -20,13 +20,22 @@ interface Model {
         community: string
         password: string
     }
+
+    torch: {
+        directory: string
+        executable: string
+    }
+
+    instance: {
+        directory: string
+    }
 }
 
 
 
 //? Module
 
-const _config: any = JSON.parse(fs.readFileSync("./config.json", "utf8"))
+const _config: any = JSON.parse(fs.readFileSync(process.argv[2] || "./config.json", "utf8"))
 const Config: Model = {
     uri: `${_config.server.secure ? 'https' : 'http'}://${_config.server.host}:${_config.server.port}`,
     ..._config

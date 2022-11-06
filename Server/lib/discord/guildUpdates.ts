@@ -28,6 +28,8 @@ export default function DiscoverGuilds(): Promise<string> {
                 icon: guild.iconURL({ size: 256, forceStatic: true }) as string
             }
 
+            RegisterBaseCommands(guild.id)
+            
             Communities.updateOne({ id: data.id }, { $set: data }, { upsert: true })
         })
 

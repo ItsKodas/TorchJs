@@ -14,6 +14,7 @@ import Alert from "@lib/discord/alert"
 export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
     const ShardId = interaction.options.getString('server')
+    if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })
 
     const Shards = await Collection('shards')
 
@@ -24,7 +25,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
             Alert(interaction.guildId as string, [
                 new EmbedBuilder()
                     .setTitle(`Server "${ShardId}" has been Disabled`)
-                    .setDescription(`The server "${ShardId}" has been disabled on the network by ${interaction.user.tag}`)
+                    .setDescription(`The server "${ShardId}" has been disabled on the network by ${interaction.user}`)
                     .setColor(Colors.warning)
             ])
 

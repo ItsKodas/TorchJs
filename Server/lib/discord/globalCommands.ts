@@ -11,7 +11,7 @@ const Commands = [
     new SlashCommandBuilder()
         .setName('set')
         .setDescription('Modify Essential Setup Configurations for TorchJs')
-        .setDefaultMemberPermissions(32) //! 32 = Manage Server
+        // .setDefaultMemberPermissions(32) //! 32 = Manage Server
 
         //? Set Community Password
         .addSubcommand(subcommand => subcommand.setName('password').setDescription('Set the Security Password for your Community')

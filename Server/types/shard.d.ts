@@ -23,6 +23,17 @@ declare global {
             state: 'online' | 'offline' | 'idle' | 'starting' | 'stopping'
             heartbeat: Date
         }
+
+        settings: {
+            servername: string
+            worldname: string
+
+            port: number
+            maxplayers: number
+            password: string | null
+
+            world: string
+        }
     }
 
 }

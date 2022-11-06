@@ -4,6 +4,8 @@ import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "dis
 
 import { Collection } from "@lib/mongodb"
 
+import UpdateServerCommandGroup from '@lib/discord/commands/server'
+
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
 
@@ -14,6 +16,7 @@ import Alert from "@lib/discord/alert"
 export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
     const ShardId = interaction.options.getString('server')
+    if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })
 
     const Shards = await Collection('shards')
 
@@ -23,11 +26,12 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
             
             Alert(interaction.guildId as string, [
                 new EmbedBuilder()
-                .setTitle(`Server "${ShardId}" Deleted from the Network`)
-                .setDescription(`The server "${ShardId}" has been deleted from the network by ${interaction.user.tag}`)
+                .setTitle(`Server "${ShardId}" has been deleted from the Network`)
+                .setDescription(`The server "${ShardId}" has been deleted from the network by ${interaction.user}`)
                 .setColor(Colors.danger)
             ])
             
+            UpdateServerCommandGroup(interaction.guildId as string)
         })
 
 }

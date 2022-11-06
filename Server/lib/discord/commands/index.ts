@@ -6,8 +6,8 @@ import { Collection } from '@lib/mongodb'
 import { Guild } from '@lib/discord'
 
 
-import _server from './server'
-import _world from './world'
+import Update, { Base as ServerBase } from './server'
+import { Base as WorldBase } from './world'
 
 
 
@@ -15,13 +15,18 @@ import _world from './world'
 
 export default async (community: string) => {
 
-    const Shards = await (await Collection('shards')).find({ community }).toArray()
+    // await RegisterBaseCommands(community)
+
+}
 
 
-    const ShardChoices: { name: string, value: string }[] = Shards.map(shard => ({ name: shard.name, value: shard.id }))
+//? Register Base Commands
 
+export async function RegisterBaseCommands(community: string) {
 
     const Community = await Guild(community)
-    Community.commands.set([_server(ShardChoices), _world(ShardChoices)])
+    await Community.commands.set([ServerBase(), WorldBase()])
+
+    console.info(`Registered Base Commands for "${Community.name}" (${Community.id})`)
 
 }

@@ -5,6 +5,8 @@ import type { Request, Response } from 'express'
 import { Collection } from '@lib/mongodb'
 import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js'
 
+import UpdateServerCommandGroup from '@lib/discord/commands/server'
+
 import * as Colors from '@lib/discord/colors'
 import Alert from '@lib/discord/alert'
 
@@ -34,10 +36,22 @@ export default async function (req: Request, res: Response) {
             status: {
                 state: 'offline',
                 heartbeat: new Date()
+            },
+            settings: {
+                servername: 'New Server',
+                worldname: 'New World',
+                port: 27015,
+                maxplayers: 8,
+                password: null,
+                world: 'New World'
             }
         }
 
-        const ShardId = await Shards.insertOne(ShardData).then(document => document.insertedId)
+        const ShardId = await Shards.insertOne(ShardData)
+            .then(document => {
+                UpdateServerCommandGroup(_community)
+                return document.insertedId
+            })
 
         Alert(req.headers.community as string, [ShardRegisterEmbed(_shard as string, req.ip as string)], [ShardRegisterComponents(ShardId)])
 

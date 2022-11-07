@@ -16,13 +16,13 @@ export default (community: string) => {
 
         const PluginPacks = await (await Collection('plugins')).find({ community, enabled: true }).toArray() as PluginPack[]
         
-        let PluginPackChoices: { name: string, value: string }[] | undefined = PluginPacks.map(pack => ({ name: `${pack.name} (${(pack._id || 'Unknown ID').toString()})`, value: (pack._id || '.').toString() }))
+        let PluginPackChoices: { name: string, value: string }[] | undefined = PluginPacks.map(pack => ({ name: `${pack.name} | (${(pack._id)})`, value: pack._id.toString() }))
 
         if (PluginPackChoices.length <= 0) PluginPackChoices = undefined
 
 
 
-        const Plugins: any[] = await rawTorchPlugins()
+        const PopularPlugins: any[] = await rawTorchPlugins()
             .then((plugins: any[]) => plugins.sort((a, b) => a.downloads < b.downloads ? 1 : -1))
             .then((plugins: any[]) => plugins.splice(0, 20).map((plugin: any) => ({ name: `${plugin.name} - ${plugin.author} (${plugin.downloads} downloads)`, value: plugin.id })))
 
@@ -35,7 +35,7 @@ export default (community: string) => {
         if (!ServerCommandGroup) return reject(`Plugins Command Group is not present in ${Community.name} (${Community.id})`)
 
 
-        ServerCommandGroup.edit(Base(Plugins)).then(resolve).catch(reject)
+        ServerCommandGroup.edit(Base(PopularPlugins, PluginPackChoices)).then(resolve).catch(reject)
 
     })
 }

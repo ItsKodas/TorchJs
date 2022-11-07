@@ -12,30 +12,33 @@ export { }
 declare global {
 
     interface Community {
-        _id?: ObjectId
+        _id: ObjectId
 
         id: string
         name: string
-        icon: string
+        icon: string | null
 
-        password?: {
-            hash: string
-            salt: string
-        }
+        password?: CommunityPassword
+        alerts?: CommunityAlerts
+    }
 
-        alerts?: {
-            channel: string
-            roles: [
-                string,
-                string,
-                string
-            ]
-            users: [
-                string,
-                string,
-                string
-            ]
-        }
+    interface CommunityPassword {
+        hash: string
+        salt: string
+    }
+
+    interface CommunityAlerts {
+        channel: string
+        roles: [
+            string | undefined,
+            string | undefined,
+            string | undefined
+        ]
+        users: [
+            string | undefined,
+            string | undefined,
+            string | undefined
+        ]
     }
 
 }

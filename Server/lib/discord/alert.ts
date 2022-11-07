@@ -1,6 +1,7 @@
 //? Dependencies
 
-import GetCommunity from "@lib/mongodb/community"
+import CommunityManager from "@lib/classes/community"
+
 import Client, { Channel } from "@lib/discord"
 
 import { APIEmbed, JSONEncodable, BaseMessageOptions } from 'discord.js'
@@ -9,12 +10,14 @@ import { APIEmbed, JSONEncodable, BaseMessageOptions } from 'discord.js'
 
 //? Alert
 
-export default async (guild: string, ping: boolean, embeds: BaseMessageOptions['embeds'], components?: BaseMessageOptions['components']) => {
+export default async (guildId: string, ping: boolean, embeds: BaseMessageOptions['embeds'], components?: BaseMessageOptions['components']) => {
 
-    const Community = await GetCommunity(guild)
-    if (!Community?.alerts?.channel) return
+    const Community = new CommunityManager(guildId)
+    if (!await Community.fetch().catch(() => false)) return
 
-    const channel = await Channel(guild, Community.alerts.channel).catch(() => null)
+    if (!Community.alerts?.channel) return
+
+    const channel = await Channel(guildId, Community.alerts.channel).catch(() => null)
     if (!channel) return
 
 

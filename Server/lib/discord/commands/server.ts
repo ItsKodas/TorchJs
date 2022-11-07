@@ -67,6 +67,18 @@ export const Base = (servers?: { name: string, value: string }[], enabledServers
     )
 
     .addSubcommand(subcommand => subcommand
+        .setName('register')
+        .setDescription('Register a New Server on the Network')
+        .addStringOption(option => option
+            .setName('id')
+            .setDescription('Server ID (Letters, Numbers, Hyphens and Underscores Only)')
+            .setRequired(true)
+            .setMinLength(1)
+            .setMaxLength(32)
+        )
+    )
+
+    .addSubcommand(subcommand => subcommand
         .setName('delete')
         .setDescription('Delete a Server on the Network')
         .addStringOption(option => option

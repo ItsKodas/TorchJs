@@ -9,6 +9,11 @@ import { SlashCommandBuilder } from 'discord.js'
 const Commands = [
 
     new SlashCommandBuilder()
+        .setName('refresh')
+        .setDescription('Refreshes all Dynamic Commands for this Server'),
+
+        
+    new SlashCommandBuilder()
         .setName('set')
         .setDescription('Modify Essential Setup Configurations for TorchJs')
         // .setDefaultMemberPermissions(32) //! 32 = Manage Server

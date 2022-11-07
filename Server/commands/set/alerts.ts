@@ -2,7 +2,7 @@
 
 import { ChatInputCommandInteraction, CacheType, Guild } from "discord.js"
 
-import { Collection } from "@lib/mongodb"
+import CommunityManager from "@lib/classes/community"
 
 import { UpdateGuild } from '@lib/discord/guildUpdates'
 
@@ -24,16 +24,18 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
     if (!Channel || Channel.type != 0) return interaction.reply({ content: 'You need to provide a Text Channel!', ephemeral: true })
 
 
-    const Communities = await Collection('communities')
-    const Community = await Communities.findOne({ id: interaction.guildId }) || await UpdateGuild(interaction.guild as Guild)
+    const Community = new CommunityManager(interaction.guildId as string)
+    if (!await Community.fetch().catch(() => false)) UpdateGuild(interaction.guild as Guild)
 
-    const Data = {
+
+    Community.alerts = {
         channel: Channel.id,
         roles: Roles.map(role => role?.id),
         users: Users.map(user => user?.id)
-    }
+    } as CommunityAlerts
 
-    Communities.updateOne({ id: Community.id }, { $set: { ...Community, alerts: Data } }, { upsert: true })
+
+    Community.save()
         .then(() => {
             interaction.reply({ content: `Network Alerts has been successfully set to: ${Channel}`, ephemeral: true })
             Alert(Community.id, true, [
@@ -43,5 +45,9 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     .setColor(Colors.info)
             ])
         })
-        .catch(() => interaction.reply({ content: 'An error occurred while setting the Community Alerts Channel', ephemeral: true }))
+        .catch(err => {
+            console.error(err)
+            interaction.reply({ content: 'An error occurred while setting the Community Alerts Channel', ephemeral: true })
+        })
+
 }

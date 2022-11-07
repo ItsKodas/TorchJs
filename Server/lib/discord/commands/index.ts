@@ -1,11 +1,7 @@
 //? Dependencies
 
-import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js"
-
 import { Collection } from '@lib/mongodb'
 import { Guild } from '@lib/discord'
-
-import rawTorchPlugins from '@lib/torchapi/plugins'
 
 
 import Update_Server, { Base as ServerBase } from './server'
@@ -19,15 +15,20 @@ import Update_Stop, { Base as StopBase } from './stop'
 
 //? Builder
 
-export default (community: string, group: 'servers') => {
+export default (community: string, group: ('*' | 'servers' | 'plugins')[]) => {
     return new Promise(async (resolve, reject) => {
 
-        if (group == 'servers') {
+        if (group.includes('*') || group.includes('servers') || group.includes('plugins')) {
             await Update_Server(community).catch(reject)
             await Update_Start(community).catch(reject)
             await Update_Stop(community).catch(reject)
-            return resolve(`Successfully updated Server Related Commands for "${community}"`)
         }
+
+        if (group.includes('*') || group.includes('plugins')) {
+            await Update_Plugins(community).catch(reject)
+        }
+
+        resolve(`Successfully updated Dynamic Commands for "${community}"`)
 
     })
 }
@@ -52,6 +53,6 @@ export async function RegisterBaseCommands(community: string) {
     await Update_Start(community)
     await Update_Stop(community)
 
-    console.info(`Registered Base Commands for "${Community.name}" (${Community.id})`)
+    console.info(`Registered Base Commands for (${Community.name} - ${Community.id})`)
 
 }

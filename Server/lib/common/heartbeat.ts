@@ -2,7 +2,7 @@
 
 import { Collection } from "@lib/mongodb"
 
-import type { ObjectId, Filter, Document } from 'mongodb'
+import ShardManager from '@lib/classes/shard'
 
 
 
@@ -17,25 +17,30 @@ export default Connected
 
 export const CycleShards = async () => {
     const Shards = await Collection('shards')
-    const ShardList = await Shards.find({}, { projection: { _id: 1 } }).toArray() as Shard[]
+    const ShardList = await Shards.find({}, { projection: { community: 1, id: 1 } }).toArray() as Shard[]
 
-    ShardList.forEach(async Shard => Heartbeat({ _id: Shard._id }))
+    ShardList.forEach(async Shard => Heartbeat(Shard.community, Shard.id))
 }
 
 
 
 //? Shard Heartbeat
 
-export const Heartbeat = async (filter: Filter<Document>) => {
-    const Shards = await Collection('shards')
-    const Shard = await Shards.findOne(filter, { projection: { _id: 1, status: 1 } }) as Shard
-    if (!Shard) return
+export const Heartbeat = async (guildId: string, shardId: string) => {
 
+    const Shard = new ShardManager(guildId, shardId)
+    if (!await Shard.fetch().catch(() => false)) return
 
+    
     const now = new Date()
     const last = new Date(Shard.status.heartbeat)
     const diff = (now.getTime() - last.getTime()) / 1000
 
-    if (Shard.status.state != 'offline' && diff > 60 * 5) Shards.updateOne({ _id: Shard._id }, { $set: { 'status.state': 'offline' } }), console.warn(`${Shard._id} has been marked as offline (${diff} seconds since last ping)`)
+    if (Shard.status.state != 'offline' && diff > 60 * 5) {
+        Shard.status.state = 'offline'
+        Shard.save()
+            .then(() => console.warn(`${Shard._id} has been marked as offline (${diff} seconds since last ping)`))
+            .catch(console.error)
+    }
 
 }

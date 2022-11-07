@@ -3,13 +3,15 @@
 import Config from '@lib/config'
 import * as Discord from "discord.js"
 
+import CommunityManager from "@lib/classes/community"
+
 
 import GlobalCommands from '@lib/discord/globalCommands'
 
 import * as _commands from '../../commands'
 import * as _buttons from '../../interfaces/buttons'
 
-import DiscoverGuilds, { UpdateGuild, DeleteGuild } from '@lib/discord/guildUpdates'
+import DiscoverGuilds, { UpdateGuild } from '@lib/discord/guildUpdates'
 
 
 //? Import Renames
@@ -69,7 +71,14 @@ export default function Client(): Promise<Discord.Client> {
 
                 //? Guilds Updates
                 _client.on('guildCreate', (guild) => { UpdateGuild(guild) })
-                _client.on('guildDelete', (guild) => DeleteGuild(guild.id))
+                _client.on('guildDelete', async (guild) => {
+                    const Community = new CommunityManager(guild.id)
+                    if (!await Community.fetch().catch(() => false)) return console.warn(`Guild (${guild.name} - ${guild.id}) cannot be deleted as it does not exist in the database`)
+
+                    Community.delete()
+                        .then(() => console.warn(`Guild Deleted (${guild.name} - ${guild.id})`))
+                        .catch(console.error)
+                })
 
             })
         } else resolve(_client)

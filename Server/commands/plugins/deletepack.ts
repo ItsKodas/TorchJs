@@ -2,9 +2,9 @@
 
 import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "discord.js"
 
-import { Collection } from "@lib/mongodb"
+import PluginManager from "@lib/classes/plugins"
 
-import Update_ServerRelated from '@lib/discord/commands'
+import Update_Commands from '@lib/discord/commands'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -15,24 +15,25 @@ import Alert from "@lib/discord/alert"
 
 export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
-    const ShardId = interaction.options.getString('server')
-    if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })
+    const Pack = new PluginManager(interaction.guildId as string, interaction.options.getString('name', true))
+    if (!await Pack.fetch().catch(() => false)) return interaction.reply({ content: 'Plugin Pack could not be found!', ephemeral: true })
 
-    const Shards = await Collection('shards')
-
-    Shards.updateOne({ id: ShardId, community: interaction.guildId }, { $set: { enabled: true } })
+    Pack.delete()
         .then(() => {
-            interaction.reply({ content: `${ShardId} has been successfully enabled on the network!`, ephemeral: true })
+            interaction.reply({ content: `Deleted Plugin Pack: **${Pack.name}** (\`${Pack._id}\`)`, ephemeral: true })
 
             Alert(interaction.guildId as string, false, [
                 new EmbedBuilder()
-                    .setTitle(`Server "${ShardId}" has been Enabled`)
-                    .setDescription(`The server "${ShardId}" has been enabled on the network by ${interaction.user}`)
-                    .setColor(Colors.success)
+                    .setTitle(`Plugin Pack Deleted: __${Pack.name}__`)
+                    .setDescription(`Plugin Pack has been deleted by ${interaction.user}`)
+                    .setFooter({ text: `GUID: ${Pack._id}` })
+                    .setColor(Colors.danger)
             ])
 
-            Update_ServerRelated(interaction.guildId as string, 'servers')
-
+            Update_Commands(interaction.guildId as string, ['plugins'])
         })
-
+        .catch(error => {
+            console.error(error)
+            interaction.reply({ content: 'An error occurred while deleting the Plugin Pack', ephemeral: true })
+        })
 }

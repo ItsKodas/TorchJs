@@ -2,9 +2,9 @@
 
 import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "discord.js"
 
-import { Collection } from "@lib/mongodb"
+import ShardManager from "@lib/classes/shard"
 
-import Update_ServerRelated from '@lib/discord/commands'
+import Update_Commands from '@lib/discord/commands'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -15,12 +15,16 @@ import Alert from "@lib/discord/alert"
 
 export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
-    const ShardId = interaction.options.getString('server')
+    const ShardId = interaction.options.getString('server') as string
     if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })
 
-    const Shards = await Collection('shards')
 
-    Shards.updateOne({ id: ShardId, community: interaction.guildId }, { $set: { enabled: true } })
+    const Shard = new ShardManager(interaction.guildId as string, ShardId)
+    if (!await Shard.fetch().catch(() => false)) return interaction.reply({ content: 'A server with that ID does not exist!', ephemeral: true })
+
+    Shard.enabled = true
+
+    Shard.save()
         .then(() => {
             interaction.reply({ content: `${ShardId} has been successfully enabled on the network!`, ephemeral: true })
 
@@ -31,8 +35,11 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     .setColor(Colors.success)
             ])
 
-            Update_ServerRelated(interaction.guildId as string, 'servers')
-
+            Update_Commands(interaction.guildId as string, ['servers'])
         })
-
+        .catch(err => {
+            console.error(err)
+            interaction.reply({ content: 'An error occurred while enabling the server.', ephemeral: true })
+        })
+        
 }

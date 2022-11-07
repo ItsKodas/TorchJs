@@ -2,6 +2,8 @@
 
 import * as Discord from "discord.js"
 
+import CommunityManager from "@lib/classes/community"
+
 import Client from '@lib/discord'
 import { Collection } from '@lib/mongodb'
 
@@ -22,17 +24,20 @@ export default function DiscoverGuilds(): Promise<string> {
 
 
 
-        Guilds.forEach(guild => {
-            const data: Community = {
-                id: guild.id,
-                name: guild.name,
-                icon: guild.iconURL({ size: 256, forceStatic: true }) as string
-            }
+        Guilds.forEach(async guild => {
+
+            const Community = new CommunityManager(guild.id)
+            await Community.fetch().catch(() => console.log(`New Guild (${guild.name} - ${guild.id}) has been added to the database`))
+
+            Community.name = guild.name
+            Community.icon = guild.iconURL({ size: 256, forceStatic: true })
+
+            Community.save()
+                .then(() => console.info(`Saved Guild (${guild.name} - ${guild.id})`))
 
             Update_Plugins(guild.id).catch(console.error)
             // RegisterBaseCommands(guild.id).catch(console.error)
-            
-            Communities.updateOne({ id: data.id }, { $set: data }, { upsert: true })
+
         })
 
         resolve(`Discovered ${Guilds.size} Guilds!`)
@@ -44,31 +49,21 @@ export default function DiscoverGuilds(): Promise<string> {
 export function UpdateGuild(guild: Discord.Guild): Promise<Community> {
     return new Promise(async (resolve, reject) => {
 
-        const Communities = await Collection('communities')
+        const Community = new CommunityManager(guild.id)
+        await Community.fetch().catch(() => {
+            console.info(`New Guild (${guild.name} - ${guild.id}) has been added to the database`)
+            RegisterBaseCommands(guild.id).catch(console.error)
+        })
 
-        const data: Community = {
-            id: guild.id,
-            name: guild.name,
-            icon: guild.iconURL({ size: 256, forceStatic: true }) as string
-        }
+        Community.name = guild.name
+        Community.icon = guild.iconURL({ size: 256, forceStatic: true })
 
-        await Communities.updateOne({ id: data.id }, { $set: data }, { upsert: true })
+        Community.save()
             .then(() => {
-                RegisterBaseCommands(guild.id)
-                console.info(`Added Guild "${data.id}"`)
+                console.log(`Saved ${guild.name} (${guild.id})`)
+                resolve(Community)
             })
             .catch(console.error)
 
-        resolve(data)
-
     })
-}
-
-
-export async function DeleteGuild(guildId: string) {
-    const Communities = await Collection('communities')
-
-    Communities.deleteOne({ id: guildId })
-        .then(() => console.warn(`Deleted Guild "${guildId}"`))
-        .catch(console.error)
 }

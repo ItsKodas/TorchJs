@@ -1,11 +1,10 @@
 //? Dependencies
 
-import type { ModifyResult } from 'mongodb'
 import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "discord.js"
 
-import { Collection } from "@lib/mongodb"
+import PluginManager from "@lib/classes/plugins"
 
-import Update_ServerRelated from '@lib/discord/commands'
+import Update_Commands from '@lib/discord/commands'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -16,24 +15,29 @@ import Alert from "@lib/discord/alert"
 
 export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
-    const ShardId = interaction.options.getString('server')
-    if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })
+    let _pluginOptions = 0
+    if (interaction.options.getString('popular')) _pluginOptions++
+    if (interaction.options.getString('guid')) _pluginOptions++
+    if (interaction.options.getString('local')) _pluginOptions++
 
-    const Shards = await Collection('shards')
+    if (_pluginOptions > 1) return interaction.reply({ content: 'You can only use one of the following options per request: `popular`, `guid`, `local`', ephemeral: true })
 
-    Shards.findOneAndUpdate({ id: ShardId, community: interaction.guildId }, { $set: { enabled: true } })
-        .then((data: any) => {
-            // interaction.reply({ content: `${data.} has been successfully enabled on the network!`, ephemeral: true })
 
-            Alert(interaction.guildId as string, false, [
-                new EmbedBuilder()
-                    .setTitle(`Server "${ShardId}" has been Enabled`)
-                    .setDescription(`The server "${ShardId}" has been enabled on the network by ${interaction.user}`)
-                    .setColor(Colors.success)
-            ])
+    const Pack = new PluginManager(interaction.guildId as string, interaction.options.getString('pack', true))
+    if (!await Pack.fetch().catch(() => false)) return interaction.reply({ content: 'Plugin Pack could not be found!', ephemeral: true })
 
-            Update_ServerRelated(interaction.guildId as string, 'servers')
 
+
+    Pack.save()
+        .then(() => {
+            interaction.reply({ content: `Created New Plugin Pack: **${Pack.name}** - \`${Pack._id}\``, ephemeral: true })
+
+            Update_Commands(interaction.guildId as string, ['plugins'])
+                .then(res => console.log(res))
+                .catch(console.error)
         })
-
+        .catch(error => {
+            console.error(error)
+            interaction.reply({ content: 'An error occurred while creating the Plugin Pack', ephemeral: true })
+        })
 }

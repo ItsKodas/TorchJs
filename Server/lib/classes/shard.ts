@@ -6,12 +6,6 @@ import { Collection } from '@lib/mongodb'
 
 
 
-//? Interfaces
-
-
-
-
-
 //? Class Definitions
 
 export default class ShardManager implements Shard {
@@ -50,8 +44,6 @@ export default class ShardManager implements Shard {
 
             world: null
         }
-
-        if (this.id.match(/[^a-z0-9_()]/)) throw new Error('Shard ID must only contain letters, numbers, and underscores.')
     }
 
 
@@ -70,7 +62,8 @@ export default class ShardManager implements Shard {
             this.status = Shard.status
             this.settings = Shard.settings
 
-            return resolve('Shard fetched successfully from database!')
+            return resolve('Shard successfully fetched from database!')
+            
         })
     }
 
@@ -83,23 +76,26 @@ export default class ShardManager implements Shard {
 
             Shards.updateOne({ _id: this._id }, { $set: this }, { upsert: true })
                 .then(res => {
-                    if (!res.acknowledged) return reject('Shard update failed!')
-                    return resolve('Shard saved successfully to the database!')
+                    if (!res.acknowledged) return reject('Shard failed to save to the database')
+                    return resolve('Shard successfully saved to the database!')
                 })
                 .catch(reject)
+
+        })
+    }
+
+    delete(): Promise<string> {
+        return new Promise(async (resolve, reject) => {
+
+            const Shards = await Collection('shards')
+
+            Shards.deleteOne({ _id: this._id })
+                .then(res => {
+                    if (!res.acknowledged) return reject('Failed to delete Shard! (No Acknowledgement, Shard may not exist)')
+                    return resolve('Shard successfully deleted from the database!')
+                })
+                .catch(reject)
+                
         })
     }
 }
-
-
-
-// Collection('shards').then(async shards => {
-//     const Clashes = await shards.findOne({ id: this.id, community: this.community })
-//     if (Clashes) throw new Error('Shard ID is already in use.')
-
-//     shards.insertOne(this)
-//         .then(res => {
-//             if (!res.acknowledged) throw new Error('Failed to Create Shard on the Database!')
-//             this._id = res.insertedId
-//         })
-// })

@@ -31,7 +31,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     .setColor(Colors.warning)
             ])
 
-            Update_ServerRelated(interaction.guildId as string, 'servers')
+            Update_ServerRelated(interaction.guildId as string, ['servers'])
 
         })
 

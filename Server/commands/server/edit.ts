@@ -2,9 +2,9 @@
 
 import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "discord.js"
 
-import { Collection } from "@lib/mongodb"
+import ShardManager from "@lib/classes/shard"
 
-import Update_ServerRelated from '@lib/discord/commands'
+import Update_Commands from '@lib/discord/commands'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -15,39 +15,35 @@ import Alert from "@lib/discord/alert"
 
 export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
-    const ShardId = interaction.options.getString('server')
+    const ShardId = interaction.options.getString('server') as string
     if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })
 
-    const Shards = await Collection('shards')
-    const Shard = await Shards.findOne({ id: ShardId, community: interaction.guildId }) as Shard
 
-    if (!Shard) return interaction.reply({ content: 'This server is not registered on the network.', ephemeral: true })
+    const Shard = new ShardManager(interaction.guildId as string, ShardId)
+    if (!await Shard.fetch().catch(() => false)) return interaction.reply({ content: 'A server with that ID does not exist!', ephemeral: true })
+
+    const Before = Shard
 
 
-    const Data: Shard = {
-        ...Shard as Shard,
+    Shard.name = interaction.options.getString('name') as string || Shard.name
 
-        name: interaction.options.getString('name') as string || Shard.name,
+    Shard.settings = {
+        servername: interaction.options.getString('servername') as string || Shard.settings.servername,
+        worldname: interaction.options.getString('worldname') as string || Shard.settings.worldname,
 
-        settings: {
-            servername: interaction.options.getString('servername') as string || Shard.settings.servername,
-            worldname: interaction.options.getString('worldname') as string || Shard.settings.worldname,
+        port: interaction.options.getInteger('port') as number || Shard.settings.port,
+        maxplayers: interaction.options.getInteger('maxplayers') as number || Shard.settings.maxplayers,
+        password: interaction.options.getString('password') as string || Shard.settings.password,
 
-            port: interaction.options.getInteger('port') as number || Shard.settings.port,
-            maxplayers: interaction.options.getInteger('maxplayers') as number || Shard.settings.maxplayers,
-            password: interaction.options.getString('password') as string || Shard.settings.password,
-
-            world: interaction.options.getString('world') as string || Shard.settings.world
-        }
-
+        world: interaction.options.getString('world') as string || Shard.settings.world
     }
 
-    console.table(Data)
 
-
-    Shards.updateOne({ id: ShardId, community: interaction.guildId }, { $set: Data })
+    Shard.save()
         .then(() => {
-            interaction.reply({ content: `${ShardId} has been successfully updated on the network!\n\`\`\`json\n${JSON.stringify(Data, null, '\t')}\`\`\``, ephemeral: true })
+            console.table(Shard)
+
+            interaction.reply({ content: `${ShardId} has been successfully updated on the network!\n\`\`\`json\n${JSON.stringify(Shard, null, '\t')}\`\`\``, ephemeral: true })
 
             Alert(interaction.guildId as string, false, [
                 new EmbedBuilder()
@@ -55,13 +51,17 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     .setDescription(`The server "${ShardId}" has been updated by ${interaction.user}`)
                     .setColor(Colors.success)
                     .setFields([
-                        { name: 'Before', value: `\`\`\`json\n${JSON.stringify(Shard, null, '\t')}\`\`\`` },
-                        { name: 'After', value: `\`\`\`json\n${JSON.stringify(Data, null, '\t')}\`\`\`` }
+                        { name: 'Before', value: `\`\`\`json\n${JSON.stringify(Before, null, '\t')}\`\`\`` },
+                        { name: 'After', value: `\`\`\`json\n${JSON.stringify(Shard, null, '\t')}\`\`\`` }
                     ])
             ])
 
-            Update_ServerRelated(interaction.guildId as string, 'servers')
+            Update_Commands(interaction.guildId as string, ['servers'])
 
+        })
+        .catch(err => {
+            console.error(err)
+            interaction.reply({ content: 'An error occurred while editing the server.', ephemeral: true })
         })
 
 }

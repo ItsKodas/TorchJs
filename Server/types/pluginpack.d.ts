@@ -12,16 +12,18 @@ export { }
 declare global {
 
     interface PluginPack {
-        _id?: ObjectId
+        _id: ObjectId
 
         name: string
         enabled: boolean
         community: string
-        
-        plugins: {
-            name: string | undefined
-            guid: string
-        }[]
+
+        plugins: PluginPackPlugin[]
+    }
+
+    interface PluginPackPlugin {
+        name: string | undefined
+        guid: string
     }
 
 }

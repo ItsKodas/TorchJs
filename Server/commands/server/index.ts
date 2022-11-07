@@ -24,5 +24,6 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
 
 export { default as enable } from './enable'
 export { default as disable } from './disable'
+export { default as register } from './register'
 export { default as delete } from './delete'
 export { default as edit } from './edit'

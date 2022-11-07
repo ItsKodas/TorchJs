@@ -1,5 +1,6 @@
 //? Dependencies
 
+import type { ModifyResult } from 'mongodb'
 import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "discord.js"
 
 import { Collection } from "@lib/mongodb"
@@ -20,15 +21,15 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
     const Shards = await Collection('shards')
 
-    Shards.updateOne({ id: ShardId, community: interaction.guildId }, { $set: { enabled: false } })
-        .then(() => {
-            interaction.reply({ content: `${ShardId} has been successfully disabled on the network!`, ephemeral: true })
+    Shards.findOneAndUpdate({ id: ShardId, community: interaction.guildId }, { $set: { enabled: true } })
+        .then((data: any) => {
+            // interaction.reply({ content: `${data.} has been successfully enabled on the network!`, ephemeral: true })
 
             Alert(interaction.guildId as string, false, [
                 new EmbedBuilder()
-                    .setTitle(`Server "${ShardId}" has been Disabled`)
-                    .setDescription(`The server "${ShardId}" has been disabled on the network by ${interaction.user}`)
-                    .setColor(Colors.warning)
+                    .setTitle(`Server "${ShardId}" has been Enabled`)
+                    .setDescription(`The server "${ShardId}" has been enabled on the network by ${interaction.user}`)
+                    .setColor(Colors.success)
             ])
 
             Update_ServerRelated(interaction.guildId as string, 'servers')

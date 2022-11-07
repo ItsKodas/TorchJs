@@ -8,18 +8,28 @@ import { Guild } from '@lib/discord'
 import rawTorchPlugins from '@lib/torchapi/plugins'
 
 
-import Update, { Base as ServerBase } from './server'
-import { Base as WorldBase } from './world'
-import { Base as PluginsBase } from './plugins'
+import Update_Server, { Base as ServerBase } from './server'
+import Update_World, { Base as WorldBase } from './world'
+import Update_Plugins, { Base as PluginsBase } from './plugins'
+
+import Update_Start, { Base as StartBase } from './start'
+import Update_Stop, { Base as StopBase } from './stop'
 
 
 
 //? Builder
 
-export default async (community: string) => {
+export default (community: string, group: 'servers') => {
+    return new Promise(async (resolve, reject) => {
 
-    // await RegisterBaseCommands(community)
+        if (group == 'servers') {
+            await Update_Server(community).catch(reject)
+            await Update_Start(community).catch(reject)
+            await Update_Stop(community).catch(reject)
+            return resolve(`Successfully updated Server Related Commands for "${community}"`)
+        }
 
+    })
 }
 
 
@@ -27,14 +37,20 @@ export default async (community: string) => {
 
 export async function RegisterBaseCommands(community: string) {
 
-    const TorchPlugins: any[] = await rawTorchPlugins()
-        .then((plugins: any[]) => plugins.sort((a, b) => a.downloads < b.downloads ? 1 : -1))
-        .then((plugins: any[]) => plugins.splice(0, 20).map((plugin: any) => ({ name: `${plugin.name} - ${plugin.author} (${plugin.downloads} downloads)`, value: plugin.id })))
-
-
     const Community = await Guild(community)
-    await Community.commands.set([ServerBase(), WorldBase(), PluginsBase(TorchPlugins)])
+    await Community.commands.set([
+        ServerBase(),
+        WorldBase(),
+        PluginsBase(),
+
+        StartBase(),
+        StopBase(),
+    ])
         .catch(console.error)
+
+    await Update_Server(community)
+    await Update_Start(community)
+    await Update_Stop(community)
 
     console.info(`Registered Base Commands for "${Community.name}" (${Community.id})`)
 

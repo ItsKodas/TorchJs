@@ -12,8 +12,18 @@ import { Guild } from '@lib/discord'
 export default (community: string) => {
     return new Promise(async (resolve, reject) => {
 
-        const Shards = await (await Collection('shards')).find({ community }).toArray()
-        const ShardChoices: { name: string, value: string }[] = Shards.map(shard => ({ name: shard.name, value: shard.id }))
+        const Shards = await (await Collection('shards')).find({ community }).toArray() as Shard[]
+        const EnabledShards = await (await Collection('shards')).find({ community, enabled: true }).toArray() as Shard[]
+        const DisabledShards = await (await Collection('shards')).find({ community, enabled: false }).toArray() as Shard[]
+
+        let ShardChoices: { name: string, value: string }[] | undefined = Shards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
+        let EnabledShardChoices: { name: string, value: string }[] | undefined = EnabledShards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
+        let DisabledShardChoices: { name: string, value: string }[] | undefined = DisabledShards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
+        
+        if (ShardChoices.length <= 0) ShardChoices = undefined
+        if (EnabledShardChoices.length <= 0) EnabledShardChoices = undefined
+        if (DisabledShardChoices.length <= 0) DisabledShardChoices = undefined
+
 
         const Community = await Guild(community)
 
@@ -23,14 +33,14 @@ export default (community: string) => {
         if (!ServerCommandGroup) return reject(`Server Command Group is not present in ${Community.name} (${Community.id})`)
 
 
-        ServerCommandGroup.edit(Base(ShardChoices))
+        ServerCommandGroup.edit(Base(ShardChoices, EnabledShardChoices, DisabledShardChoices)).then(resolve).catch(reject)
 
     })
 }
 
 
 
-export const Base = (servers?: { name: string, value: string }[]) => new SlashCommandBuilder()
+export const Base = (servers?: { name: string, value: string }[], enabledServers?: { name: string, value: string }[], disabledServers?: { name: string, value: string }[]) => new SlashCommandBuilder()
     .setName('server')
     .setDescription('Manage Servers on the Network')
 
@@ -41,7 +51,7 @@ export const Base = (servers?: { name: string, value: string }[]) => new SlashCo
             .setName('server')
             .setDescription('Select a Server to Enable')
             .setRequired(true)
-            .setChoices(...servers || [{ name: 'No Servers Available', value: '.' }])
+            .setChoices(...disabledServers || [{ name: 'No Servers Disabled / Available', value: '.' }])
         )
     )
 
@@ -52,7 +62,7 @@ export const Base = (servers?: { name: string, value: string }[]) => new SlashCo
             .setName('server')
             .setDescription('Select a Server to Disable')
             .setRequired(true)
-            .setChoices(...servers || [{ name: 'No Servers Available', value: '.' }])
+            .setChoices(...enabledServers || [{ name: 'No Servers Enabled / Available', value: '.' }])
         )
     )
 

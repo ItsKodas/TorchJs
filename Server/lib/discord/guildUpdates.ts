@@ -6,6 +6,7 @@ import Client from '@lib/discord'
 import { Collection } from '@lib/mongodb'
 
 import { RegisterBaseCommands } from '@lib/discord/commands'
+import Update_Plugins from '@lib/discord/commands/plugins'
 
 
 
@@ -28,7 +29,8 @@ export default function DiscoverGuilds(): Promise<string> {
                 icon: guild.iconURL({ size: 256, forceStatic: true }) as string
             }
 
-            RegisterBaseCommands(guild.id)
+            Update_Plugins(guild.id).catch(console.error)
+            // RegisterBaseCommands(guild.id).catch(console.error)
             
             Communities.updateOne({ id: data.id }, { $set: data }, { upsert: true })
         })

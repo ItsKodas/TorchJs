@@ -36,7 +36,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
     Communities.updateOne({ id: Community.id }, { $set: { ...Community, alerts: Data } }, { upsert: true })
         .then(() => {
             interaction.reply({ content: `Network Alerts has been successfully set to: ${Channel}`, ephemeral: true })
-            Alert(Community.id, [
+            Alert(Community.id, true, [
                 new EmbedBuilder()
                     .setTitle('🌐 Network Alerts')
                     .setDescription('>>> Network Alerts have been linked to this channel')

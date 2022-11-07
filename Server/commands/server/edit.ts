@@ -4,7 +4,7 @@ import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "dis
 
 import { Collection } from "@lib/mongodb"
 
-import UpdateServerCommandGroup from '@lib/discord/commands/server'
+import Update_ServerRelated from '@lib/discord/commands'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -49,7 +49,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
         .then(() => {
             interaction.reply({ content: `${ShardId} has been successfully updated on the network!\n\`\`\`json\n${JSON.stringify(Data, null, '\t')}\`\`\``, ephemeral: true })
 
-            Alert(interaction.guildId as string, [
+            Alert(interaction.guildId as string, false, [
                 new EmbedBuilder()
                     .setTitle(`Server "${ShardId}" settings have been Updated`)
                     .setDescription(`The server "${ShardId}" has been updated by ${interaction.user}`)
@@ -60,7 +60,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     ])
             ])
 
-            UpdateServerCommandGroup(interaction.guildId as string)
+            Update_ServerRelated(interaction.guildId as string, 'servers')
 
         })
 

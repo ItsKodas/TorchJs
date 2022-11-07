@@ -5,7 +5,7 @@ import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcomm
 import { Collection } from '@lib/mongodb'
 import { Guild } from '@lib/discord'
 
-import rawTorchPlugins from '@lib/torchapi/plugins'
+import { Request as FetchTorchPlugins } from '@lib/torchapi/plugins'
 
 
 
@@ -15,16 +15,16 @@ export default (community: string) => {
     return new Promise(async (resolve, reject) => {
 
         const PluginPacks = await (await Collection('plugins')).find({ community, enabled: true }).toArray() as PluginPack[]
-        
+
         let PluginPackChoices: { name: string, value: string }[] | undefined = PluginPacks.map(pack => ({ name: `${pack.name} | (${(pack._id)})`, value: pack._id.toString() }))
 
         if (PluginPackChoices.length <= 0) PluginPackChoices = undefined
 
 
 
-        const PopularPlugins: any[] = await rawTorchPlugins()
+        const PopularPlugins: any[] = await FetchTorchPlugins()
             .then((plugins: any[]) => plugins.sort((a, b) => a.downloads < b.downloads ? 1 : -1))
-            .then((plugins: any[]) => plugins.splice(0, 20).map((plugin: any) => ({ name: `${plugin.name} - ${plugin.author} (${plugin.downloads} downloads)`, value: plugin.id })))
+            .then((plugins: any[]) => plugins.slice(0, 20).map((plugin: any) => ({ name: `${plugin.name} - ${plugin.author} (${plugin.downloads} downloads)`, value: plugin.id })))
 
 
         const Community = await Guild(community)
@@ -69,11 +69,11 @@ export const Base = (popular?: { name: string, value: string }[], packs?: { name
 
     .addSubcommand(subcommand => subcommand
         .setName('add')
-        .setDescription('Add a Plugin from TorchAPI or the Local Client to a Plugin Package (Up to 20 Plugins per Pack)')
+        .setDescription('Add a Plugin from TorchAPI or the Local Client to a Plugin Package (Up to 30 Plugins per Pack)')
 
         .addStringOption(option => option
             .setName('pack')
-            .setDescription('Plugin Pack to add the Plugin to')
+            .setDescription('The Pack you want to add a Plugin to')
             .addChoices(...packs || [{ name: 'No Plugin Packs Available', value: '.' }])
             .setRequired(true)
         )
@@ -93,4 +93,10 @@ export const Base = (popular?: { name: string, value: string }[], packs?: { name
             .setName('local')
             .setDescription('Add a Local Plugin Located in the Plugins Directory via GUID from the Manifest')
         )
+    )
+
+    .addSubcommand(subcommand => subcommand
+        .setName('remove')
+        .setDescription('Remove a Plugin from a Plugin Package')
+
     )

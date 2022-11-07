@@ -22,15 +22,11 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
     if (interaction.options.getString('guid')) _pluginOptions++, Guid = interaction.options.getString('guid') as string
     if (interaction.options.getString('local')) _pluginOptions++, Guid = interaction.options.getString('local') as string
 
-    if (_pluginOptions > 1) return interaction.reply({ content: 'You can only use __one__ of the following options per request: `popular`, `guid`, `local`', ephemeral: true })
-    if (_pluginOptions == 0) return interaction.reply({ content: 'You need to use __one__ of the following options: `popular`, `guid`, `local`', ephemeral: true })
+    if (_pluginOptions > 1) return interaction.reply({ content: 'You can only use one of the following options per request: `popular`, `guid`, `local`', ephemeral: true })
 
 
     const Pack = new PluginManager(interaction.guildId as string, interaction.options.getString('pack', true))
     if (!await Pack.fetch().catch(() => false)) return interaction.reply({ content: 'Plugin Pack could not be found!', ephemeral: true })
-
-    if (Pack.plugins.length >= 30) return interaction.reply({ content: 'You can only have 30 plugins per pack!', ephemeral: true })
-
 
 
     if (interaction.options.getString('popular') || interaction.options.getString('guid')) {
@@ -42,6 +38,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
         Pack.add({ name: Plugin.name, guid: Plugin.id })
             .then(() => {
                 interaction.reply({ content: `${Plugin.name} by ${Plugin.author} has been added to ${Pack.name}.`, ephemeral: true })
+                Update_Commands(interaction.guildId as string, ['plugins'])
             })
             .catch(err => {
                 console.error(err)
@@ -53,6 +50,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
         Pack.add({ name: undefined, guid: Guid })
             .then(() => {
                 interaction.reply({ content: `Local System Plugin has been added to ${Pack.name}.\n\n\`>>> ${Guid}\``, ephemeral: true })
+                Update_Commands(interaction.guildId as string, ['plugins'])
             })
             .catch(err => {
                 console.error(err)

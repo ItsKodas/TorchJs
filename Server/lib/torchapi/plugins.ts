@@ -13,7 +13,7 @@ let LastFetched: Date | null = null
 
 //? Request Plugins from Torch API
 
-export const Request: any = () => {
+export function Request(): Promise<any> {
     return new Promise(async (resolve, reject) => {
 
         const Now: Date = new Date()

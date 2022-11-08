@@ -24,4 +24,7 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
 
 export { default as createpack } from './createpack'
 export { default as deletepack } from './deletepack'
+export { default as list } from './list'
+
 export { default as add } from './add'
+export { default as remove } from './remove'

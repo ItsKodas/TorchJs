@@ -44,7 +44,7 @@ export default (community: string) => {
 
 export const Base = (popular?: { name: string, value: string }[], packs?: { name: string, value: string }[]) => new SlashCommandBuilder()
     .setName('plugins')
-    .setDescription('Manage and Explore Plugins from TorchAPI')
+    .setDescription('Manage and Explore Plugins from TorchAPI (Up to 25 Packs per Community)')
 
     .addSubcommand(subcommand => subcommand
         .setName('createpack')
@@ -66,6 +66,18 @@ export const Base = (popular?: { name: string, value: string }[], packs?: { name
             .addChoices(...packs || [{ name: 'No Plugin Packs Available', value: '.' }])
         )
     )
+
+    .addSubcommand(subcommand => subcommand
+        .setName('list')
+        .setDescription('List all Plugins in a Package')
+        .addStringOption(option => option
+            .setName('pack')
+            .setDescription('Name of the Plugin Package to List')
+            .setRequired(true)
+            .addChoices(...packs || [{ name: 'No Plugin Packs Available', value: '.' }])
+        )
+    )
+
 
     .addSubcommand(subcommand => subcommand
         .setName('add')
@@ -99,4 +111,19 @@ export const Base = (popular?: { name: string, value: string }[], packs?: { name
         .setName('remove')
         .setDescription('Remove a Plugin from a Plugin Package')
 
+        .addStringOption(option => option
+            .setName('pack')
+            .setDescription('The Pack you want to add a Plugin to')
+            .addChoices(...packs || [{ name: 'No Plugin Packs Available', value: '.' }])
+            .setRequired(true)
+        )
+
+        .addIntegerOption(option => option
+            .setName('index')
+            .setDescription('The Index of the Plugin to Remove (Use "/plugins list" to find the Index)')
+            .setRequired(true)
+
+            .setMinValue(0)
+            .setMaxValue(20)
+        )
     )

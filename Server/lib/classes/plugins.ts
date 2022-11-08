@@ -20,6 +20,14 @@ export default class PluginManager implements PluginPack {
     plugins: PluginPackPlugin[]
 
 
+    /**
+     * Constructs a new Plugin Package
+     * 
+     * @param guildId The Guild ID of the Community this Package Relates to
+     * @param guid The GUID of the Package (if not provided, a new Package will be created when fetched)
+     * 
+     * @returns A new Plugin Package
+     */
     constructor(guildId: string, guid?: string) {
         this._id = guid ? new ObjectId(guid) : new ObjectId()
 
@@ -31,7 +39,11 @@ export default class PluginManager implements PluginPack {
     }
 
 
-
+    /**
+     * Fetches a Package from the Database matching the guildId and guid
+     * 
+     * @returns Whether or not the Package was successfully fetched from the database (Updates this Class with the fetched data)
+     */
     fetch(): Promise<string> {
         return new Promise(async (resolve, reject) => {
 
@@ -52,10 +64,19 @@ export default class PluginManager implements PluginPack {
         })
     }
 
+    /**
+     * Saves / Updates the Package on the database
+     * 
+     * @returns Whether or not the Plugin Package was successfully saved / updated on the database (Uses the data present in this Class)
+     */
     save(): Promise<string> {
         return new Promise(async (resolve, reject) => {
 
             const Packs = await Collection('plugins')
+
+            const isNew = await Packs.findOne({ _id: this._id }).then(pack => pack ? true : false).catch(err => { console.error(err); return true })
+            if (isNew && await (await Packs.find({ community: this.community }).toArray()).length >= 25) return reject('Maximum Quantity of Plugin Packages has been reached for this Community! (25)')
+
 
             Packs.updateOne({ _id: this._id }, { $set: this }, { upsert: true })
                 .then(res => {
@@ -67,6 +88,13 @@ export default class PluginManager implements PluginPack {
         })
     }
 
+    /**
+     * Deletes this Package from the database
+     * 
+     * @requires The Package to be fetched from the database first
+     * 
+     * @returns Whether or not the Package was successfully deleted
+     */
     delete(): Promise<string> {
         return new Promise(async (resolve, reject) => {
 
@@ -83,6 +111,13 @@ export default class PluginManager implements PluginPack {
     }
 
 
+    /**
+     * Adds a Plugin to this Package
+     * 
+     * @param plugin
+     * 
+     * @returns Whether or not the Plugin was successfully added
+     */
     add(plugin: PluginPackPlugin): Promise<string> {
         return new Promise(async (resolve, reject) => {
 
@@ -97,15 +132,32 @@ export default class PluginManager implements PluginPack {
         })
     }
 
-    remove(guid: string): Promise<string> {
+
+    /**
+     * Removes a Plugin from this Package
+     * 
+     * @param identifier This can either be the index of the Plugin in the Package, or the GUID of the Plugin
+     * 
+     * @returns Whether or not the Plugin was successfully removed
+     */
+    remove(identifier: string | number): Promise<PluginPackPlugin> {
         return new Promise(async (resolve, reject) => {
 
-            this.plugins.find((plugin, index) => {
-                if (plugin.guid == guid) this.plugins.splice(index, 1)
+            let plugin: PluginPackPlugin = {} as PluginPackPlugin
+
+
+            if (typeof identifier == 'string') this.plugins.find((plugin, index) => {
+                if (plugin.guid == identifier) plugin = this.plugins.splice(index, 1)[0]
             })
 
+            if (typeof identifier == 'number') plugin = this.plugins.splice(identifier, 1)[0]
+
+
+            if (!plugin) return reject('Plugin could not be found!')
+
+
             this.save()
-                .then(resolve)
+                .then(() => resolve(plugin))
                 .catch(reject)
 
         })

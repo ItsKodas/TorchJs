@@ -37,6 +37,6 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
         })
         .catch(error => {
             console.error(error)
-            interaction.reply({ content: 'An error occurred while creating the Plugin Pack', ephemeral: true })
+            interaction.reply({ content: `An error occurred while creating the Plugin Pack\n\n**Details**\n\`${error}\``, ephemeral: true })
         })
 }

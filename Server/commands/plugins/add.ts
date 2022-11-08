@@ -45,7 +45,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
             })
             .catch(err => {
                 console.error(err)
-                interaction.reply({ content: 'An error occurred while adding the plugin to the pack!', ephemeral: true })
+                interaction.reply({ content: `An error occurred while adding the plugin to the pack!\n\n**Details**\n\`${err}\``, ephemeral: true })
             })
     }
 
@@ -56,7 +56,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
             })
             .catch(err => {
                 console.error(err)
-                interaction.reply({ content: 'An error occurred while adding the plugin to the pack!', ephemeral: true })
+                interaction.reply({ content: `An error occurred while adding the plugin to the pack!\n\n**Details**\n\`${err}\``, ephemeral: true })
             })
     }
 

@@ -46,17 +46,18 @@ export default class PluginManager implements PluginPack {
      */
     fetch(): Promise<string> {
         return new Promise(async (resolve, reject) => {
+            const _pack = this
 
             const Packs = await Collection('plugins')
             const Pack = await Packs.findOne({ _id: this._id }) as PluginPack
             if (!Pack) return reject('Plugin Package could not be found!')
 
 
-            this.name = Pack.name
-            this.enabled = Pack.enabled
-            this.community = Pack.community
+            this.name = Pack.name || _pack.name
+            this.enabled = Pack.enabled || _pack.enabled
+            this.community = Pack.community || _pack.community
 
-            this.plugins = Pack.plugins
+            this.plugins = Pack.plugins || _pack.plugins
 
 
             return resolve('Plugin Package successfully fetched from database!')

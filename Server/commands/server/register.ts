@@ -40,7 +40,7 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
         })
         .catch(err => {
             console.error(err)
-            interaction.reply({ content: 'An error occurred while registering the server.', ephemeral: true })
+            interaction.reply({ content: `An error occurred while registering the server.\n\n**Details**\n\`${err}\``, ephemeral: true })
         })
 
 

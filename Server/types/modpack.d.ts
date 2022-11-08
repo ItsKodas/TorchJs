@@ -11,18 +11,18 @@ export { }
 
 declare global {
 
-    interface PluginPack {
+    interface ModPack {
         _id: ObjectId
 
         name: string
         enabled: boolean
         community: string
 
-        plugins: PluginPackPlugin[]
+        mods: ModPackMod[]
     }
 
-    interface PluginPackPlugin {
-        guid: string
+    interface ModPackMod {
+        id: string
         name: string | undefined
     }
 

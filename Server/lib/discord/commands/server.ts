@@ -9,6 +9,8 @@ import { Guild } from '@lib/discord'
 
 //? Command Editor
 
+type Options = { name: string, value: string }[] | undefined
+
 export default (community: string) => {
     return new Promise(async (resolve, reject) => {
 
@@ -16,13 +18,24 @@ export default (community: string) => {
         const EnabledShards = await (await Collection('shards')).find({ community, enabled: true }).toArray() as Shard[]
         const DisabledShards = await (await Collection('shards')).find({ community, enabled: false }).toArray() as Shard[]
 
-        let ShardChoices: { name: string, value: string }[] | undefined = Shards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
-        let EnabledShardChoices: { name: string, value: string }[] | undefined = EnabledShards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
-        let DisabledShardChoices: { name: string, value: string }[] | undefined = DisabledShards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
-        
+        const Plugins = await (await Collection('plugins')).find({ community }).toArray() as PluginPack[]
+
+
+
+        let ShardChoices: Options = Shards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
+        let EnabledShardChoices: Options = EnabledShards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
+        let DisabledShardChoices: Options = DisabledShards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
+
+        let PluginChoices: Options = Plugins.map(plugin => ({ name: `${plugin.name} | (${plugin._id})`, value: (plugin._id).toString() }))
+
+
+
         if (ShardChoices.length <= 0) ShardChoices = undefined
         if (EnabledShardChoices.length <= 0) EnabledShardChoices = undefined
         if (DisabledShardChoices.length <= 0) DisabledShardChoices = undefined
+
+        if (PluginChoices.length <= 0) PluginChoices = undefined
+
 
 
         const Community = await Guild(community)
@@ -33,16 +46,16 @@ export default (community: string) => {
         if (!ServerCommandGroup) return reject(`Server Command Group is not present in ${Community.name} (${Community.id})`)
 
 
-        ServerCommandGroup.edit(Base(ShardChoices, EnabledShardChoices, DisabledShardChoices)).then(resolve).catch(reject)
+        ServerCommandGroup.edit(Base(ShardChoices, EnabledShardChoices, DisabledShardChoices, PluginChoices)).then(resolve).catch(reject)
 
     })
 }
 
 
 
-export const Base = (servers?: { name: string, value: string }[], enabledServers?: { name: string, value: string }[], disabledServers?: { name: string, value: string }[]) => new SlashCommandBuilder()
+export const Base = (servers?: Options, enabledServers?: Options, disabledServers?: Options, plugins?: Options) => new SlashCommandBuilder()
     .setName('server')
-    .setDescription('Manage Servers on the Network')
+    .setDescription('Manage Servers on the Network (Up to 20 Servers per Community)')
 
     .addSubcommand(subcommand => subcommand
         .setName('enable')
@@ -92,7 +105,6 @@ export const Base = (servers?: { name: string, value: string }[], enabledServers
     .addSubcommand(subcommand => subcommand
         .setName('edit')
         .setDescription('Edit a Server on the Network')
-
         .addStringOption(option => option
             .setName('server')
             .setDescription('Select a Server to Edit')
@@ -109,4 +121,46 @@ export const Base = (servers?: { name: string, value: string }[], enabledServers
         .addIntegerOption(option => option.setName('maxplayers').setDescription('Set the Maximum Number of Players that can join this Server').setMinValue(1).setMaxValue(100))
         .addIntegerOption(option => option.setName('port').setDescription('Set the Listening Port that this Server will use').setMinValue(1).setMaxValue(65535))
         .addStringOption(option => option.setName('password').setDescription('Set a Password for the Server'))
+    )
+
+
+    .addSubcommandGroup(subcommandgroup => subcommandgroup
+        .setName('plugins')
+        .setDescription('Manage the Plugin Packages for this Server')
+
+        .addSubcommand(subcommand => subcommand
+            .setName('add')
+            .setDescription('Add a Package to this Server')
+            .addStringOption(option => option
+                .setName('server')
+                .setDescription('Select a Server to add a Package to')
+                .setRequired(true)
+                .setChoices(...servers || [{ name: 'No Servers Available', value: '.' }])
+            )
+
+            .addStringOption(option => option
+                .setName('pack')
+                .setDescription('Select a Package to add to this Server')
+                .setRequired(true)
+                .setChoices(...plugins || [{ name: 'No Plugin Packages Available', value: '.' }])
+            )
+        )
+
+        .addSubcommand(subcommand => subcommand
+            .setName('remove')
+            .setDescription('Remove a Package from this Server')
+            .addStringOption(option => option
+                .setName('server')
+                .setDescription('Select a Server to remove a Package from')
+                .setRequired(true)
+                .setChoices(...servers || [{ name: 'No Servers Available', value: '.' }])
+            )
+
+            .addStringOption(option => option
+                .setName('pack')
+                .setDescription('Select a Package to remove from this Server')
+                .setRequired(true)
+                .setChoices(...plugins || [{ name: 'No Plugin Packages Available', value: '.' }])
+            )
+        )
     )

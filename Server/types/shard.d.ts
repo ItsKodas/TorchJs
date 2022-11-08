@@ -19,8 +19,31 @@ declare global {
         enabled: boolean
         community: string
 
+        discord: ShardDiscord
+
         status: ShardStatus
         settings: ShardSettings
+
+        plugins: ShardPlugins[]
+        mods: ModPack[]
+    }
+
+    interface ShardDiscord {
+        notifications: {     
+
+            public: {
+                enabled: boolean
+                channel: string | null
+                types: ('all' | 'important' | 'none' | 'crashes' | 'errors' | 'warnings' | 'status' | 'player-join' | 'player-leave')[]
+            }
+
+            admin: {
+                enabled: boolean
+                channel: string | null
+                types: ('all' | 'important' | 'none' | 'crashes' | 'errors' | 'warnings' | 'status' | 'player-join' | 'player-leave')[]
+            }
+
+        }
     }
 
     interface ShardStatus {
@@ -39,6 +62,12 @@ declare global {
 
         world: string | null
     }
-    
+
+
+    interface ShardPlugins {
+        guid: string
+        name: string
+    }
+
 
 }

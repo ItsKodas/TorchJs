@@ -12,7 +12,7 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
     if (!interaction.isChatInputCommand()) return
 
     try {
-        Subcommands[interaction.options.getSubcommandGroup() || interaction.options.getSubcommand()](interaction)
+        Subcommands[interaction.options.getSubcommand()](interaction)
     } catch {
         interaction.reply({ content: 'This Sub Command does not exist on the Server!', ephemeral: true })
     }
@@ -22,10 +22,5 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
 
 //? Subcommands
 
-export { default as enable } from './enable'
-export { default as disable } from './disable'
-export { default as register } from './register'
-export { default as delete } from './delete'
-export { default as edit } from './edit'
-
-export { default as plugins } from './plugins'
+export { default as add } from './add'
+export { default as remove } from './remove'

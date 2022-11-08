@@ -33,18 +33,19 @@ export default class CommunityManager implements Community {
 
     fetch(): Promise<string> {
         return new Promise(async (resolve, reject) => {
+            const _community = this
 
             const Communities = await Collection('communities')
             const Community = (await Communities.findOne({ _id: this._id }) || await Communities.findOne({ id: this.id })) as Community
             if (!Community) return reject('Community could not be found!')
 
 
-            this._id = Community._id
-            this.name = Community.name
-            this.icon = Community.icon
+            this._id = Community._id || this._id
+            this.name = Community.name || this.name
+            this.icon = Community.icon || this.icon
 
-            if (Community.password) this.password = Community.password
-            if (Community.alerts) this.alerts = Community.alerts
+            this.password = Community.password || this.password
+            this.alerts = Community.alerts || this.alerts
 
 
             return resolve('Community successfully fetched from database!')

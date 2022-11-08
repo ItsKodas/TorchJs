@@ -2,9 +2,9 @@
 
 import Config from '@lib/config'
 
-import Bucket from '@api/bucket'
+import Query from '@api/standard'
 
-import { ReadStream } from '@lib/torch/fileStream'
+import Edit_Torch from '@lib/torch/editor/torch'
 
 
 
@@ -13,18 +13,11 @@ import { ReadStream } from '@lib/torch/fileStream'
 export default () => {
     return new Promise(async (resolve, reject) => {
 
-        const Data: any = (await Bucket().catch(reject) as any).data
+        const Data: Shard = (await Query('shard').catch(reject) as any).data
         console.info(Data)
 
 
-
-        //! Prep Torch.cfg
-
-        const TorchConfig: any = await ReadStream(`${Config.torch.directory}/Torch.cfg`).catch(reject)
-
-        console.log(TorchConfig)
-        
-        TorchConfig.TorchConfig.InstanceName = [Data.id]
+        await Edit_Torch(Data).catch(err => console.error(err))
 
 
     })

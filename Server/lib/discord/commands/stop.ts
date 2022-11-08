@@ -41,5 +41,5 @@ export const Base = (servers?: { name: string, value: string }[]) => new SlashCo
         .setName('server')
         .setDescription('Select a Server to Stop')
         .setRequired(true)
-        .setChoices(...servers || [{ name: 'No Servers Currently Offline / Available', value: '.' }])
+        .setChoices(...servers || [{ name: 'No Servers Currently Online / Available', value: '.' }])
     )

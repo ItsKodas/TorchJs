@@ -155,7 +155,7 @@ export default class ShardManager implements Shard {
         return new Promise(async (resolve, reject) => {
 
             const Pack = new PluginManager(this.community as string, guid)
-            if (!await Pack.fetch().catch(() => false)) return reject('A plugin package with that GUID does not exist!')
+            if (!await Pack.fetch().catch(() => false)) console.warn('Removing Plugin Pack from Shard as it no longer exists.')
 
             if (!this.plugins.find(p => p.guid == Pack._id.toString())) return reject("This server does not have that plugin package added!")
 

@@ -10,6 +10,7 @@ import Update_Plugins, { Base as PluginsBase } from './plugins'
 
 import Update_Start, { Base as StartBase } from './start'
 import Update_Stop, { Base as StopBase } from './stop'
+import Update_Restart, { Base as RestartBase } from './restart'
 
 
 
@@ -22,6 +23,7 @@ export default (community: string, group: ('*' | 'servers' | 'plugins')[]) => {
             await Update_Server(community).catch(reject)
             await Update_Start(community).catch(reject)
             await Update_Stop(community).catch(reject)
+            await Update_Restart(community).catch(reject)
         }
 
         if (group.includes('*') || group.includes('plugins')) {
@@ -46,12 +48,14 @@ export async function RegisterBaseCommands(community: string) {
 
         StartBase(),
         StopBase(),
+        RestartBase()
     ])
         .catch(console.error)
 
     await Update_Server(community)
     await Update_Start(community)
     await Update_Stop(community)
+    await Update_Restart(community)
 
     console.info(`Registered Base Commands for (${Community.name} - ${Community.id})`)
 

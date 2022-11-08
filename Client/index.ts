@@ -2,7 +2,7 @@
 
 import Config from '@lib/config'
 
-import Establish from '@api/establish'
+import Query from '@api/standard'
 
 import PrepareServer from '@lib/torch/prepare'
 
@@ -12,7 +12,7 @@ import PrepareServer from '@lib/torch/prepare'
 console.info(`Attempting to Establish a Connection with the Server (${Config.server.host}:${Config.server.port}) using Shard ID '${Config.shard.id}'`)
 
 const ConnectToServer = () => {
-    Establish()
+    Query('establish', 'POST')
         .then((res: any) => {
             if (res.status != 200) return console.warn(res.message)
             console.info(res.message)

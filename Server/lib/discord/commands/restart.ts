@@ -12,7 +12,7 @@ import { Guild } from '@lib/discord'
 export default (community: string) => {
     return new Promise(async (resolve, reject) => {
 
-        const Shards = await (await Collection('shards')).find({ community, enabled: true, 'status.shouldBeRunning': false }).toArray() as Shard[]
+        const Shards = await (await Collection('shards')).find({ community, enabled: true, 'status.shouldBeRunning': true }).toArray() as Shard[]
         let ShardChoices: { name: string, value: string }[] | undefined = Shards.map(shard => ({ name: shard.name == shard.id ? shard.id : `${shard.name} (${shard.id})`, value: shard.id }))
 
         if (ShardChoices.length <= 0) ShardChoices = undefined
@@ -21,9 +21,9 @@ export default (community: string) => {
         const Community = await Guild(community)
 
         const Commands = await Community.commands.fetch()
-        const ServerCommandGroup = Commands.find(command => command.name === 'start')
+        const ServerCommandGroup = Commands.find(command => command.name === 'restart')
 
-        if (!ServerCommandGroup) return reject(`Start Command Group is not present in ${Community.name} (${Community.id})`)
+        if (!ServerCommandGroup) return reject(`Restart Command Group is not present in ${Community.name} (${Community.id})`)
 
 
         ServerCommandGroup.edit(Base(ShardChoices)).then(resolve).catch(reject)
@@ -34,12 +34,12 @@ export default (community: string) => {
 
 
 export const Base = (servers?: { name: string, value: string }[]) => new SlashCommandBuilder()
-    .setName('start')
-    .setDescription('Start a Server on the Network')
+    .setName('restart')
+    .setDescription('Restart a Server on the Network')
 
     .addStringOption(option => option
         .setName('server')
-        .setDescription('Select a Server to Start')
+        .setDescription('Select a Server to Restart')
         .setRequired(true)
-        .setChoices(...servers || [{ name: 'No Servers Currently Offline / Available', value: '.' }])
+        .setChoices(...servers || [{ name: 'No Servers Currently Online / Available', value: '.' }])
     )

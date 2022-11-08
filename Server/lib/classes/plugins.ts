@@ -103,7 +103,7 @@ export default class PluginManager implements PluginPack {
 
             Packs.deleteOne({ _id: this._id })
                 .then(res => {
-                    if (!res.acknowledged) return reject('Failed to delete Plugin Package! (No Acknowledgement, Shard may not exist)')
+                    if (!res.acknowledged) return reject('Failed to delete Plugin Package! (No Acknowledgement, Pack may not exist)')
                     return resolve('Plugin Package successfully deleted from the database!')
                 })
                 .catch(reject)

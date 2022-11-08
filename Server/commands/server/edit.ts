@@ -41,8 +41,6 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
     Shard.save()
         .then(() => {
-            console.table(Shard)
-
             interaction.reply({ content: `${ShardId} has been successfully updated on the network!\n\`\`\`json\n${JSON.stringify(Shard, null, '\t')}\`\`\``, ephemeral: true })
 
             Alert(interaction.guildId as string, false, [
@@ -51,8 +49,8 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     .setDescription(`The server "${ShardId}" has been updated by ${interaction.user}`)
                     .setColor(Colors.success)
                     .setFields([
-                        { name: 'Before', value: `\`\`\`json\n${JSON.stringify(Before, null, '\t')}\`\`\`` },
-                        { name: 'After', value: `\`\`\`json\n${JSON.stringify(Shard, null, '\t')}\`\`\`` }
+                        { name: 'Before', value: `\`\`\`json\n${JSON.stringify(Before.settings, null, '\t')}\`\`\`` },
+                        { name: 'After', value: `\`\`\`json\n${JSON.stringify(Shard.settings, null, '\t')}\`\`\`` }
                     ])
             ])
 

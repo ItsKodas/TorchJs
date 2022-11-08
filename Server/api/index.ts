@@ -17,7 +17,9 @@ app.use(Middleware.auth)
 app.post('/establish', (req, res) => Routes.establish(req, res))
 
 app.get('/tasks', (req, res) => Routes.tasks(req, res))
-app.get('/bucket', (req, res) => Routes.bucket(req, res))
+
+app.get('/shard', (req, res) => Routes.shard(req, res))
+app.get('/plugins', (req, res) => Routes.plugins(req, res))
 
 
 
@@ -33,8 +35,11 @@ app.all('*', (req, res) => res.status(404).json({ error: 'This API Route does no
 //? Route Exports
 
 export { default as establish } from './establish'
+
 export { default as tasks } from './tasks'
-export { default as bucket } from './bucket'
+
+export { default as shard } from './shard'
+export { default as plugins } from './plugins'
 
 
 

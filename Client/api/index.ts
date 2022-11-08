@@ -1,1 +1,1 @@
-export { default as establish } from './establish'
+export { default as standard } from './standard'

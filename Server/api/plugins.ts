@@ -21,7 +21,7 @@ export default async function (req: Request, res: Response) {
         if (!await Pack.fetch().catch(() => false)) return Pack.delete()
 
         Pack.plugins.forEach(plugin => {
-            
+
             Plugins.find(p => console.log(p))
 
         })

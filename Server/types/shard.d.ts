@@ -29,7 +29,7 @@ declare global {
     }
 
     interface ShardDiscord {
-        notifications: {     
+        notifications: {
 
             public: {
                 enabled: boolean
@@ -58,9 +58,13 @@ declare global {
 
         port: number
         maxplayers: number
-        password: string | null
 
         world: string | null
+
+        password: {
+            salt: string
+            hash: string
+        } | null
     }
 
 

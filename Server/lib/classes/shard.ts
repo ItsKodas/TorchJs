@@ -7,6 +7,8 @@ import { Collection } from '@lib/mongodb'
 
 import PluginManager from './plugins'
 
+import { pbkdf2Sync, randomBytes } from 'crypto'
+
 
 
 //? Class Definitions
@@ -134,6 +136,26 @@ export default class ShardManager implements Shard {
     }
 
 
+    setPassword(password: string): Promise<string> {
+        return new Promise(async (resolve, reject) => {
+
+            const PasswordBuffer = new Buffer(password)
+            const SaltBuffer = new Buffer(randomBytes(16)).toString('hex')
+
+            const Hash = pbkdf2Sync(PasswordBuffer, SaltBuffer, 1000, 256, 'sha1')
+
+            this.settings.password = {
+                salt: SaltBuffer,
+                hash: Hash.toString('hex').toUpperCase()
+            }
+
+            this.save()
+                .then(() => resolve(password))
+                .catch(reject)
+
+        })
+    }
+
     addPluginPack(guid: string): Promise<PluginPack> {
         return new Promise(async (resolve, reject) => {
 
@@ -142,7 +164,7 @@ export default class ShardManager implements Shard {
 
             if (this.plugins.find(p => p.guid == Pack._id.toString())) return reject('This server already has that plugin package added!')
 
-            this.plugins.push({guid: Pack._id.toString(), name: Pack.name})
+            this.plugins.push({ guid: Pack._id.toString(), name: Pack.name })
 
             this.save()
                 .then(() => resolve(Pack))

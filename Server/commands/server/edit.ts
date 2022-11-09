@@ -33,10 +33,12 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
         port: interaction.options.getInteger('port') as number || Shard.settings.port,
         maxplayers: interaction.options.getInteger('maxplayers') as number || Shard.settings.maxplayers,
-        password: interaction.options.getString('password') as string || Shard.settings.password,
+        password: Shard.settings.password,
 
         world: interaction.options.getString('world') as string || Shard.settings.world
     }
+
+    if (interaction.options.getString('password')) await Shard.setPassword(interaction.options.getString('password') as string)
 
 
     Shard.save()

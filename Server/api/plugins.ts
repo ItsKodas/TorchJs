@@ -16,20 +16,16 @@ export default async function (req: Request, res: Response) {
 
 
     let Plugins: any[] = []
-    Shard.plugins.forEach(async pack => {
+    for (const pack of Shard.plugins) {
         const Pack = new PluginManager(Shard.community, pack.guid)
         if (!await Pack.fetch().catch(() => false)) return Pack.delete()
 
-        Pack.plugins.forEach(plugin => {
+        for (const plugin of Pack.plugins) {
+            if (Plugins.findIndex(p => p.guid == plugin.guid) == -1) Plugins.push(plugin)
+        }
+    }
 
-            Plugins.find(p => console.log(p))
-
-        })
-    })
-
-    console.log(Plugins)
-
-
+    
     return res.status(200).json({ data: Plugins })
 
 }

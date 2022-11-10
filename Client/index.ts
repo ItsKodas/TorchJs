@@ -4,25 +4,56 @@ import Config from '@lib/config'
 
 import Query from '@api/standard'
 
-import PrepareServer from '@lib/torch/prepare'
+import Client from '@app/client'
 
 
 
 //! Initialize Client with Server
-console.info(`Attempting to Establish a Connection with the Server (${Config.server.host}:${Config.server.port}) using Shard ID '${Config.shard.id}'`)
 
-const ConnectToServer = () => {
-    Query('establish', 'POST')
-        .then((res: any) => {
-            if (res.status != 200) return console.warn(res.message)
-            console.info(res.message)
+(async () => {
 
-            clearInterval(Connection)
+    for (const instance of Config.instances) {
 
-            PrepareServer()
-        })
-        .catch(err => console.error(err))
+        if (!instance.enabled) {
+            console.warn(`Skipping '${instance.id}' as it is disabled.`)
+            continue
+        }
+
+
+        const client = new Client(instance.id)
+
+        await ConnectInstance(client)
+            .then(res => console.info(res))
+            .catch(err => console.error(err))
+
+        if (!client.isConnected) return
+
+
+        await client.start()
+            .then(res => console.info(res))
+            .catch(err => console.error(err))
+    }
+
+})();
+
+
+
+async function ConnectInstance(client: Client) {
+    return new Promise((resolve, reject) => {
+
+        let attempts = 0
+
+        function Connect() {
+            client.connect()
+                .then(resolve)
+                .catch(err => {
+                    if (attempts >= 10) return reject(`Failed to Connect '${client.id}' to the Server after ${attempts} attempts.`)
+                    console.error(err, `| Attempt: ${attempts++}`)
+                    setTimeout(Connect, 10000)
+                })
+        }
+
+        Connect()
+
+    })
 }
-
-const Connection = setInterval(ConnectToServer, 15000)
-ConnectToServer()

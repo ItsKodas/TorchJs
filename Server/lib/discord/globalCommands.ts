@@ -10,13 +10,15 @@ const Commands = [
 
     new SlashCommandBuilder()
         .setName('refresh')
-        .setDescription('Refreshes all Dynamic Commands for this Server'),
+        .setDescription('Refreshes all Dynamic Commands for this Server')
+        .setDMPermission(false),
 
         
     new SlashCommandBuilder()
         .setName('set')
         .setDescription('Modify Essential Setup Configurations for TorchJs')
-        // .setDefaultMemberPermissions(32) //! 32 = Manage Server
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(32) //! 32 = Manage Server
 
         //? Set Community Password
         .addSubcommand(subcommand => subcommand.setName('password').setDescription('Set the Security Password for your Community')

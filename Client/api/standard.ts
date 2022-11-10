@@ -7,12 +7,12 @@ import Headers from '@lib/common/headers'
 
 //? Establish Connection with Server
 
-export default (endpoint: string, method?: 'GET' | 'POST') => {
+export default (id: string, endpoint: string, method?: 'GET' | 'POST') => {
     return new Promise((resolve, reject) => {
 
         fetch(`${Config.uri}/${endpoint}`, {
             method: method || 'GET',
-            headers: Headers
+            headers: Headers(id)
         })
             .then(async res => {
                 const json = await res.json()

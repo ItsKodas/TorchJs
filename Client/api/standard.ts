@@ -10,7 +10,7 @@ import Headers from '@lib/common/headers'
 export default (id: string, endpoint: string, method?: 'GET' | 'POST') => {
     return new Promise((resolve, reject) => {
 
-        fetch(`${Config.uri}/${endpoint}`, {
+        fetch(`${Config.uri}/api/${endpoint}`, {
             method: method || 'GET',
             headers: Headers(id)
         })

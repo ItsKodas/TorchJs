@@ -7,6 +7,9 @@ import fs from "fs"
 //? Interface
 
 interface Model {
+
+    url: string
+
     server: {
         port: number
         password?: string
@@ -21,6 +24,7 @@ interface Model {
         id: string
         token: string
     }
+    
 }
 
 

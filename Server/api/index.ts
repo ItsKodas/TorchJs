@@ -9,23 +9,23 @@ import * as Middleware from './middleware'
 
 //? Middleware
 
-app.use(Middleware.auth)
+app.use('/api/*', Middleware.auth)
 
 
 //? Routes
 
-app.post('/establish', (req, res) => Routes.establish(req, res))
+app.post('/api/establish', (req, res) => Routes.establish(req, res))
 
-app.get('/tasks', (req, res) => Routes.tasks(req, res))
+app.get('/api/tasks', (req, res) => Routes.tasks(req, res))
 
-app.get('/shard', (req, res) => Routes.shard(req, res))
-app.get('/plugins', (req, res) => Routes.plugins(req, res))
+app.get('/api/shard', (req, res) => Routes.shard(req, res))
+app.get('/api/plugins', (req, res) => Routes.plugins(req, res))
 
 
 
 //? Errors
 
-app.all('*', (req, res) => res.status(404).json({ error: 'This API Route does not exist!' }))
+app.all('/api/*', (req, res) => res.status(404).json({ error: 'This API Route does not exist!' }))
 
 
 

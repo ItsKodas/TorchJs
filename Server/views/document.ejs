@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title><%= locals.title ? title : 'No Title Provided' %></title>
+
+        <link rel="stylesheet" href="/css/main.css" />
+    </head>
+
+
+    <body>
+        <%- include(`./components/${locals.component ? component : 'error'}`) %>
+    </body>
+
+
+    <footer>
+
+    </footer>
+
+</html>

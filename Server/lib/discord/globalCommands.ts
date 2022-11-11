@@ -35,7 +35,17 @@ const Commands = [
             .addUserOption(option => option.setName('user1').setDescription('Users to ping and restrict access to').setRequired(false))
             .addUserOption(option => option.setName('user2').setDescription('Users to ping and restrict access to').setRequired(false))
             .addUserOption(option => option.setName('user3').setDescription('Users to ping and restrict access to').setRequired(false))
-        )
+        ),
+
+
+    new SlashCommandBuilder()
+        .setName('route')
+        .setDescription('Manage Routes for the Web Server (DEV)')
+        .setDMPermission(false)
+        .setDefaultMemberPermissions(32)
+
+        .addSubcommand(subcommand => subcommand.setName('add').setDescription('Add a Route to the Web Server'))
+        .addSubcommand(subcommand => subcommand.setName('remove').setDescription('Remove a Route from the Web Server'))
 ]
 
 export default Commands

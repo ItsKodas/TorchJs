@@ -5,3 +5,7 @@ export { default as server } from './server'
 // export { default as world } from './world'
 
 export { default as plugins } from './plugins'
+
+
+
+export { default as route } from './route'

@@ -1,14 +1,35 @@
+//? Exports
+
+export * as alerts from './alerts'
+export * as password from './password'
+
+
+
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, SlashCommandBuilder } from "discord.js"
 
 import * as _subcommands from '.'
 const Subcommands: any = _subcommands
 
 
+
 //? Command
 
-export default (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const data = new SlashCommandBuilder()
+    .setName('set')
+    .setDescription('Modify Essential Setup Configurations for TorchJs')
+    .setDMPermission(false)
+    .setDefaultMemberPermissions(32) //! 32 = Manage Server
+
+    .addSubcommand(Subcommands.alerts.data)
+    .addSubcommand(Subcommands.password.data)
+
+
+
+//? Response
+
+export const response = (interaction: ChatInputCommandInteraction<CacheType>) => {
     if (!interaction.isChatInputCommand()) return
 
     try {
@@ -17,10 +38,3 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
         interaction.reply({ content: 'This Sub Command does not exist on the Server!', ephemeral: true })
     }
 }
-
-
-
-//? Subcommands
-
-export { default as alerts } from './alerts'
-export { default as password } from './password'

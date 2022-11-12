@@ -7,6 +7,7 @@ import { Guild } from '@lib/discord'
 import Update_Server, { Base as ServerBase } from './server'
 import Update_World, { Base as WorldBase } from './world'
 import Update_Plugins, { Base as PluginsBase } from './plugins'
+import Update_Configure, { Base as ConfigureBase } from './configure'
 
 import Update_Start, { Base as StartBase } from './start'
 import Update_Stop, { Base as StopBase } from './stop'
@@ -45,6 +46,7 @@ export async function RegisterBaseCommands(community: string) {
         ServerBase(),
         WorldBase(),
         PluginsBase(),
+        ConfigureBase(),
 
         StartBase(),
         StopBase(),

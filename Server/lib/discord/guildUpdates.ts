@@ -7,9 +7,6 @@ import CommunityManager from "@lib/classes/community"
 import Client from '@lib/discord'
 import { Collection } from '@lib/mongodb'
 
-import { RegisterBaseCommands } from '@lib/discord/commands'
-import Update_Plugins from '@lib/discord/commands/plugins'
-
 
 
 //? Exports
@@ -35,9 +32,6 @@ export default function DiscoverGuilds(): Promise<string> {
             Community.save()
                 .then(() => console.info(`Saved Guild (${guild.name} - ${guild.id})`))
 
-            Update_Plugins(guild.id).catch(console.error)
-            // RegisterBaseCommands(guild.id).catch(console.error)
-
         })
 
         resolve(`Discovered ${Guilds.size} Guilds!`)
@@ -52,7 +46,6 @@ export function UpdateGuild(guild: Discord.Guild): Promise<Community> {
         const Community = new CommunityManager(guild.id)
         await Community.fetch().catch(() => {
             console.info(`New Guild (${guild.name} - ${guild.id}) has been added to the database`)
-            RegisterBaseCommands(guild.id).catch(console.error)
         })
 
         Community.name = guild.name

@@ -35,35 +35,66 @@ export default (community: string) => {
         if (!ServerCommandGroup) return reject(`Plugins Command Group is not present in ${Community.name} (${Community.id})`)
 
 
-        ServerCommandGroup.edit(Base(PopularPlugins, PluginPackChoices)).then(resolve).catch(reject)
+        ServerCommandGroup.edit(Base()).then(resolve).catch(reject)
 
     })
 }
 
 
 
-export const Base = (popular?: { name: string, value: string }[], packs?: { name: string, value: string }[]) => new SlashCommandBuilder()
-    .setName('plugins')
-    .setDescription('Manage and Explore Plugins from TorchAPI (Up to 25 Packs per Community)')
+export const Base = () => new SlashCommandBuilder()
+    .setName('config')
+    .setDescription('Manage and Edit Configuration Files to be synced across linked servers')
 
-    .addSubcommand(subcommand => subcommand
-        .setName('createpack')
-        .setDescription('Create a New Plugin Package to link to your servers')
-        .addStringOption(option => option
-            .setName('name')
-            .setDescription('Name of the Plugin Package to Create')
-            .setRequired(true)
+    .addSubcommandGroup(subcommand => subcommand
+        .setName('create')
+        .setDescription('Create a New Configuration File')
+
+        .addSubcommand(subcommand => subcommand
+            .setName('world')
+            .setDescription('Create a New World Configuration File')
+            .addStringOption(option => option
+                .setName('name')
+                .setDescription('Display Name for this Configuration')
+                .setRequired(true)
+            )
+            .addBooleanOption(option => option
+                .setName('edit')
+                .setDescription('Prepare the Editor for this Configuration after creation')
+            )
+        )
+
+        .addSubcommand(subcommand => subcommand
+            .setName('plugin')
+            .setDescription('Create a New Plugin Configuration File')
+            .addStringOption(option => option
+                .setName('name')
+                .setDescription('Display Name for this Configuration')
+                .setRequired(true)
+            )
+            .addStringOption(option => option
+                .setName('filename')
+                .setDescription('Filename that will be used for this Configuration')
+                .setRequired(true)
+                .setChoices(
+                    { name: 'Essentials by Torch', value: 'Essentials.cfg' },
+                )
+            )
+            .addBooleanOption(option => option
+                .setName('edit')
+                .setDescription('Prepare the Editor for this Configuration after creation')
+            )
         )
     )
 
     .addSubcommand(subcommand => subcommand
-        .setName('deletepack')
+        .setName('delete')
         .setDescription('Delete a Plugin Package from your network')
         .addStringOption(option => option
             .setName('name')
             .setDescription('Name of the Plugin Package to Delete')
             .setRequired(true)
-            .addChoices(...packs || [{ name: 'No Plugin Packs Available', value: '.' }])
+            .addChoices({ name: 'No Plugin Packs Available', value: '.' })
         )
     )
 
@@ -74,26 +105,26 @@ export const Base = (popular?: { name: string, value: string }[], packs?: { name
             .setName('pack')
             .setDescription('Name of the Plugin Package to List')
             .setRequired(true)
-            .addChoices(...packs || [{ name: 'No Plugin Packs Available', value: '.' }])
+            .addChoices({ name: 'No Plugin Packs Available', value: '.' })
         )
     )
 
 
     .addSubcommand(subcommand => subcommand
-        .setName('add')
+        .setName('edit')
         .setDescription('Add a Plugin from TorchAPI or the Local Client to a Plugin Package (Up to 30 Plugins per Pack)')
 
         .addStringOption(option => option
             .setName('pack')
             .setDescription('The Pack you want to add a Plugin to')
-            .addChoices(...packs || [{ name: 'No Plugin Packs Available', value: '.' }])
+            .addChoices({ name: 'No Plugin Packs Available', value: '.' })
             .setRequired(true)
         )
 
         .addStringOption(option => option
             .setName('popular')
             .setDescription('Popular Plugins from TorchAPI')
-            .addChoices(...popular || [{ name: 'Plugins have not yet been Fetched from TorchAPI', value: '.' }])
+            .addChoices({ name: 'Plugins have not yet been Fetched from TorchAPI', value: '.' })
         )
 
         .addStringOption(option => option
@@ -104,26 +135,5 @@ export const Base = (popular?: { name: string, value: string }[], packs?: { name
         .addStringOption(option => option
             .setName('local')
             .setDescription('Add a Local Plugin Located in the Plugins Directory via GUID from the Manifest')
-        )
-    )
-
-    .addSubcommand(subcommand => subcommand
-        .setName('remove')
-        .setDescription('Remove a Plugin from a Plugin Package')
-
-        .addStringOption(option => option
-            .setName('pack')
-            .setDescription('The Pack you want to add a Plugin to')
-            .addChoices(...packs || [{ name: 'No Plugin Packs Available', value: '.' }])
-            .setRequired(true)
-        )
-
-        .addIntegerOption(option => option
-            .setName('index')
-            .setDescription('The Index of the Plugin to Remove (Use "/plugins list" to find the Index)')
-            .setRequired(true)
-
-            .setMinValue(0)
-            .setMaxValue(20)
         )
     )

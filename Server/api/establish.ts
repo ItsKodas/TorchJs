@@ -7,7 +7,7 @@ import ShardManager from '@lib/classes/shard'
 import { Collection } from '@lib/mongodb'
 import { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } from 'discord.js'
 
-import Update_ServerRelated from '@lib/discord/commands'
+import Update_ServerRelated from 'commands.s'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from '@lib/discord/alert'

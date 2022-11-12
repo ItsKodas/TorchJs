@@ -1,14 +1,33 @@
+//? Exports
+
+export * as add from './add'
+export * as remove from './remove'
+
+
+
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, SlashCommandSubcommandGroupBuilder } from "discord.js"
 
 import * as _subcommands from '.'
 const Subcommands: any = _subcommands
 
 
+
 //? Command
 
-export default (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const data = new SlashCommandSubcommandGroupBuilder()
+    .setName('plugins')
+    .setDescription('Manage the Plugin Packages for this Server')
+
+    .addSubcommand(Subcommands.add.data)
+    .addSubcommand(Subcommands.remove.data)
+
+
+
+//? Response
+
+export const response = (interaction: ChatInputCommandInteraction<CacheType>) => {
     if (!interaction.isChatInputCommand()) return
 
     try {
@@ -17,10 +36,3 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
         interaction.reply({ content: 'This Sub Command does not exist on the Server!', ephemeral: true })
     }
 }
-
-
-
-//? Subcommands
-
-export { default as add } from './add'
-export { default as remove } from './remove'

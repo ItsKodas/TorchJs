@@ -1,10 +1,10 @@
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "discord.js"
+import Discord from "discord.js"
 
 import ShardManager from "@lib/classes/shard"
 
-import Update_Commands from '@lib/discord/commands'
+import { Shards } from '@lib/common/autocomplete'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -13,10 +13,33 @@ import Alert from "@lib/discord/alert"
 
 //? Command
 
-export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const data = new Discord.SlashCommandSubcommandBuilder()
+    .setName('edit')
+    .setDescription('Edit a Server on the Network')
+    .addStringOption(option => option
+        .setName('server')
+        .setDescription('Select a Server to Edit')
+        .setRequired(true)
+        .setAutocomplete(true)
+    )
+
+    .addStringOption(option => option.setName('name').setDescription('Set the Display Name for this Server'))
+
+    .addStringOption(option => option.setName('servername').setDescription('Set the Server Name for this Server'))
+    .addStringOption(option => option.setName('worldname').setDescription('Set the World Name for this Server (Overrides the Loaded World Name)'))
+    .addStringOption(option => option.setName('world').setDescription('Set the Current World Save'))
+
+    .addIntegerOption(option => option.setName('maxplayers').setDescription('Set the Maximum Number of Players that can join this Server').setMinValue(1).setMaxValue(100))
+    .addIntegerOption(option => option.setName('port').setDescription('Set the Listening Port that this Server will use').setMinValue(1).setMaxValue(65535))
+    .addStringOption(option => option.setName('password').setDescription('Set a Password for the Server'))
+
+
+
+//? Response
+
+export const response = async (interaction: Discord.ChatInputCommandInteraction) => {
 
     const ShardId = interaction.options.getString('server') as string
-    if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })
 
 
     const Shard = new ShardManager(interaction.guildId as string, ShardId)
@@ -43,10 +66,10 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
     Shard.save()
         .then(() => {
-            interaction.reply({ content: `${ShardId} has been successfully updated on the network!\n\`\`\`json\n${JSON.stringify(Shard, null, '\t')}\`\`\``, ephemeral: true })
+            interaction.reply({ content: `${ShardId} has been successfully updated on the network!\n\`\`\`json\n${JSON.stringify(Shard.settings, null, '\t')}\`\`\``, ephemeral: true })
 
             Alert(interaction.guildId as string, false, [
-                new EmbedBuilder()
+                new Discord.EmbedBuilder()
                     .setTitle(`Server "${ShardId}" settings have been Updated`)
                     .setDescription(`The server "${ShardId}" has been updated by ${interaction.user}`)
                     .setColor(Colors.success)
@@ -56,8 +79,6 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     ])
             ])
 
-            Update_Commands(interaction.guildId as string, ['servers'])
-
         })
         .catch(err => {
             console.error(err)
@@ -65,3 +86,9 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
         })
 
 }
+
+
+
+//? Autocomplete
+
+export const autocomplete = async (interaction: Discord.AutocompleteInteraction) => interaction.respond(await Shards(interaction.guildId as string, interaction.options.getFocused()))

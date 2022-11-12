@@ -4,8 +4,6 @@ import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "dis
 
 import { Collection } from "@lib/mongodb"
 
-import Update_ServerRelated from '@lib/discord/commands'
-
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
 
@@ -30,8 +28,6 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     .setDescription(`The server "${ShardId}" has been disabled on the network by ${interaction.user}`)
                     .setColor(Colors.warning)
             ])
-
-            Update_ServerRelated(interaction.guildId as string, ['servers'])
 
         })
 

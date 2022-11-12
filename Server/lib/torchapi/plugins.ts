@@ -1,48 +1,37 @@
 //? Dependencies
 
-import fs from 'fs'
+import { Collection } from "@lib/mongodb"
 
 
 
-//? Variables
+//? Request and Sync Plugins from Torch API
 
-let Plugins: any = null
-let LastFetched: Date | null = null
+export async function Sync() {
 
+    const Data = await fetch('https://torchapi.com/api/plugins')
+        .then(res => {
+            if (res.ok) {
+                return res.json()
+            }
+            else console.log(res.json())
+        })
+        .catch(() => console.error('Failed to fetch plugins from Torch API!'))
 
-
-//? Request Plugins from Torch API
-
-export function Request(): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-
-        const Now: Date = new Date()
-        const Diff = LastFetched ? Now.getTime() - LastFetched.getTime() : null
-
-        if (Diff && Diff < 1000 * 60 * 60 * 24) return resolve(Plugins)
+    if (!Data) return
 
 
-        const Data = await fetch('https://torchapi.com/api/plugins')
-            .then(res => {
-                if (res.ok) {
-                    LastFetched = new Date()
-                    return res.json()
-                }
-                else console.log(res.json())
-            })
-            .catch(() => console.error('Failed to fetch plugins from Torch API!'))
+    const Plugins = await Collection('torchapi-plugins')
 
-
-        Plugins = Data.plugins
-        resolve(Plugins)
-
+    Data.plugins.forEach((plugin: any) => {
+        Plugins.updateOne(
+            { _id: plugin.id },
+            { $set: plugin },
+            { upsert: true }
+        )    
     })
+
+    console.log(`Successfully synced ${Data.plugins.length} plugins from Torch API!`)
+
 }
 
-export default Request
-
-
-
-//? Parse for Discord Choices
-
-export const Choices = () => Request().then((Plugins: any) => Plugins.map((plugin: any) => ({ name: `${plugin.name} - ${plugin.author}`, value: plugin.id })))
+export default Sync

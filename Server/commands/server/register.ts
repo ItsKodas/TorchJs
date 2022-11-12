@@ -1,10 +1,8 @@
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder, SlashCommandSubcommandBuilder } from "discord.js"
 
 import ShardManager from "@lib/classes/shard"
-
-import Update_Commands from '@lib/discord/commands'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -13,7 +11,22 @@ import Alert from "@lib/discord/alert"
 
 //? Command
 
-export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const data = new SlashCommandSubcommandBuilder()
+    .setName('register')
+    .setDescription('Register a New Server on the Network')
+    .addStringOption(option => option
+        .setName('id')
+        .setDescription('Server ID (Letters, Numbers, Hyphens and Underscores Only)')
+        .setRequired(true)
+        .setMinLength(1)
+        .setMaxLength(32)
+    )
+
+
+
+//? Response
+
+export const response = async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
     const ShardId = interaction.options.getString('id')?.toLowerCase()
     if (!ShardId) return interaction.reply({ content: 'You must provide a server ID.', ephemeral: true })
@@ -36,7 +49,6 @@ export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
                     .setColor(Colors.success)
             ])
 
-            Update_Commands(interaction.guildId as string, ['servers'])
         })
         .catch(err => {
             console.error(err)

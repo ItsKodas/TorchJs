@@ -1,14 +1,41 @@
+//? Exports
+
+export * as createpack from './createpack'
+export * as deletepack from './deletepack'
+export * as list from './list'
+
+export * as add from './add'
+export * as remove from './remove'
+
+
+
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, SlashCommandBuilder } from "discord.js"
 
 import * as _subcommands from '.'
 const Subcommands: any = _subcommands
 
 
+
 //? Command
 
-export default (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const data = new SlashCommandBuilder()
+    .setName('plugins')
+    .setDescription('Manage and Explore Plugins from TorchAPI')
+    .setDMPermission(false)
+    
+    .addSubcommand(Subcommands.createpack.data)
+    .addSubcommand(Subcommands.deletepack.data)
+    .addSubcommand(Subcommands.list.data)
+    .addSubcommand(Subcommands.add.data)
+    .addSubcommand(Subcommands.remove.data)
+
+
+
+//? Response
+
+export const response = (interaction: ChatInputCommandInteraction<CacheType>) => {
     if (!interaction.isChatInputCommand()) return
 
     try {
@@ -17,14 +44,3 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
         interaction.reply({ content: 'This Sub Command does not exist on the Server!', ephemeral: true })
     }
 }
-
-
-
-//? Subcommands
-
-export { default as createpack } from './createpack'
-export { default as deletepack } from './deletepack'
-export { default as list } from './list'
-
-export { default as add } from './add'
-export { default as remove } from './remove'

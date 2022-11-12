@@ -1,10 +1,8 @@
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder, SlashCommandSubcommandBuilder } from "discord.js"
 
 import ShardManager from "@lib/classes/shard"
-
-import Update_Commands from '@lib/discord/commands'
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -13,7 +11,28 @@ import Alert from "@lib/discord/alert"
 
 //? Command
 
-export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const data = new SlashCommandSubcommandBuilder()
+    .setName('add')
+    .setDescription('Add a Package to this Server')
+    .addStringOption(option => option
+        .setName('server')
+        .setDescription('Select a Server to add a Package to')
+        .setRequired(true)
+        .setAutocomplete(true)
+    )
+
+    .addStringOption(option => option
+        .setName('pack')
+        .setDescription('Select a Package to add to this Server')
+        .setRequired(true)
+        .setAutocomplete(true)
+    )
+
+
+
+//? Response
+
+export const response = async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
     const ShardId = interaction.options.getString('server') as string
     if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })

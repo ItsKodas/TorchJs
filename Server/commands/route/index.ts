@@ -22,5 +22,5 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
 
 //? Subcommands
 
-export { default as add } from './add'
+export * as add from './add'
 // export { default as remove } from './remove'

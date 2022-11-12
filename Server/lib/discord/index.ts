@@ -1,23 +1,15 @@
 //? Dependencies
 
 import Config from '@lib/config'
-import * as Discord from "discord.js"
+import Discord from "discord.js"
 
 import CommunityManager from "@lib/classes/community"
-
-
-import GlobalCommands from '@lib/discord/globalCommands'
-
-import * as _commands from '../../commands'
-import * as _buttons from '../../interfaces/buttons'
 
 import DiscoverGuilds, { UpdateGuild } from '@lib/discord/guildUpdates'
 
 
-//? Import Renames
-
-const Commands: any = _commands
-const Buttons: any = _buttons
+const Commands: any = require('../../commands')
+const Buttons: any = require('../../interfaces/buttons')
 
 
 
@@ -46,8 +38,13 @@ export default function Client(): Promise<Discord.Client> {
 
 
                 //? Register Global Commands
-                _client.application?.commands.set(GlobalCommands)
-                    .then(() => console.log('Registered Global Commands!'))
+                if (_client.application) _client.application.commands.set([
+
+                    Commands.set.data,
+                    Commands.server.data,
+                    Commands.plugins.data
+
+                ]).then(() => console.log('Registered Global Commands!'))
 
 
                 //? Discover Guilds
@@ -59,13 +56,31 @@ export default function Client(): Promise<Discord.Client> {
 
                 //? Interaction Handler
                 _client.on('interactionCreate', interaction => {
+
+                    let path = '../../commands/'
+
                     try {
-                        if (interaction.isChatInputCommand()) Commands[interaction.commandName](interaction)
+
+                        if (interaction.isChatInputCommand() || interaction.isAutocomplete()) {
+                            if (interaction.commandName) path += interaction.commandName
+                            if (interaction.options.getSubcommandGroup()) path += ('/' + interaction.options.getSubcommandGroup())
+                            if (interaction.options.getSubcommand()) path += ('/' + interaction.options.getSubcommand())
+                        }
+
+                        if (interaction.isAutocomplete()) require(path).autocomplete(interaction)
+                        if (interaction.isChatInputCommand()) require(path).response(interaction)
                         if (interaction.isButton()) Buttons[interaction.customId.split('.')[0]](interaction, interaction.customId.split('.'))
-                    } catch {
+
+                    } catch (err) {
+
+                        console.error(err)
+
+                        if (interaction.isAutocomplete()) interaction.respond([{name: `${path} is missing an autocomplete method!`, value: '.'}])
                         if (interaction.isChatInputCommand() || interaction.isButton()) interaction.reply({ content: 'This Command does not exist on the Server!', ephemeral: true })
                         else console.log(`Interaction "${interaction.id}" does not exist on the Server!`)
+
                     }
+
                 })
 
 

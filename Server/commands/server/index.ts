@@ -1,14 +1,44 @@
+//? Exports
+
+export * as enable from './enable'
+export * as disable from './disable'
+export * as register from './register'
+export * as delete from './delete'
+export * as edit from './edit'
+
+export * as plugins from './plugins'
+
+
+
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, SlashCommandBuilder } from "discord.js"
 
 import * as _subcommands from '.'
 const Subcommands: any = _subcommands
 
 
+
 //? Command
 
-export default (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const data = new SlashCommandBuilder()
+    .setName('server')
+    .setDescription('Manage Servers on the Network')
+    .setDMPermission(false)
+
+    .addSubcommandGroup(Subcommands.plugins.data)
+
+    .addSubcommand(Subcommands.enable.data)
+    .addSubcommand(Subcommands.disable.data)
+    .addSubcommand(Subcommands.register.data)
+    .addSubcommand(Subcommands.delete.data)
+    .addSubcommand(Subcommands.edit.data)
+
+
+
+//? Response
+
+export const response = (interaction: ChatInputCommandInteraction<CacheType>) => {
     if (!interaction.isChatInputCommand()) return
 
     try {
@@ -17,15 +47,3 @@ export default (interaction: ChatInputCommandInteraction<CacheType>) => {
         interaction.reply({ content: 'This Sub Command does not exist on the Server!', ephemeral: true })
     }
 }
-
-
-
-//? Subcommands
-
-export { default as enable } from './enable'
-export { default as disable } from './disable'
-export { default as register } from './register'
-export { default as delete } from './delete'
-export { default as edit } from './edit'
-
-export { default as plugins } from './plugins'

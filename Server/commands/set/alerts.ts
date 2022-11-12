@@ -1,6 +1,6 @@
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType, Guild } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, Guild, SlashCommandSubcommandBuilder } from "discord.js"
 
 import CommunityManager from "@lib/classes/community"
 
@@ -15,7 +15,24 @@ import Alert from '@lib/discord/alert'
 
 //? Command
 
-export default async (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const data = new SlashCommandSubcommandBuilder()
+    .setName('alerts')
+    .setDescription('Set the Alerts Channel for your Network (Only Staff Members Should Have Access to this Channel)')
+
+    .addChannelOption(option => option.setName('channel').setDescription('Channel for Alerts').setRequired(true))
+    .addRoleOption(option => option.setName('role1').setDescription('Roles to ping and restrict access to').setRequired(false))
+    .addRoleOption(option => option.setName('role2').setDescription('Roles to ping and restrict access to').setRequired(false))
+    .addRoleOption(option => option.setName('role3').setDescription('Roles to ping and restrict access to').setRequired(false))
+
+    .addUserOption(option => option.setName('user1').setDescription('Users to ping and restrict access to').setRequired(false))
+    .addUserOption(option => option.setName('user2').setDescription('Users to ping and restrict access to').setRequired(false))
+    .addUserOption(option => option.setName('user3').setDescription('Users to ping and restrict access to').setRequired(false))
+
+
+
+//? Response
+
+export const response = async (interaction: ChatInputCommandInteraction<CacheType>) => {
 
     const Channel = interaction.options.getChannel('channel')
     const Roles = [interaction.options.getRole('role1'), interaction.options.getRole('role2'), interaction.options.getRole('role3')]

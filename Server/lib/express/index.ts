@@ -5,6 +5,8 @@ import Config from '@lib/config'
 import express from 'express'
 import bodyParser from 'body-parser'
 
+import * as Editor from './session/editor'
+
 
 
 //? Server
@@ -25,20 +27,7 @@ app.get('/', (req, res) => {
 })
 
 
-app.get('/editor', (req, res) => {
-
-    const data = {
-        title: 'Editor',
-        description: 'Create your own commands for your Discord bot',
-        component: 'edit'
-    }
-
-    res.render('document', data, (err, html) => {
-        if (err) return res.render('document', { component: 'error', error: err })
-        else return html
-    })
-
-})
+app.route('/editor').get(Editor.get).post(Editor.post)
 
 
 export default app

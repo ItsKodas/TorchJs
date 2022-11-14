@@ -106,10 +106,6 @@ export default class ShardManager implements Shard {
 
             const Shards = await Collection('shards')
 
-            const isNew = await Shards.findOne({ _id: this._id }).then(shard => shard ? true : false).catch(err => { console.error(err); return true })
-            if (isNew && await (await Shards.find({ community: this.community }).toArray()).length >= 20) return reject('Maximum Quantity of Servers has been reached for this Community! (20)')
-
-
             Shards.updateOne({ _id: this._id }, { $set: this }, { upsert: true })
                 .then(res => {
                     if (!res.acknowledged) return reject('Shard failed to save to the database')

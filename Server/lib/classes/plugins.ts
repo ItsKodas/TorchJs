@@ -29,7 +29,7 @@ export default class PluginManager implements PluginPack {
      * @returns A new Plugin Package
      */
     constructor(guildId: string, guid?: string) {
-        this._id = ObjectId.isValid(guid) ? new ObjectId(guid) : new ObjectId()
+        this._id = ObjectId.isValid(guid || '') ? new ObjectId(guid) : new ObjectId()
 
         this.name = 'unknown'
         this.enabled = true
@@ -74,9 +74,6 @@ export default class PluginManager implements PluginPack {
         return new Promise(async (resolve, reject) => {
 
             const Packs = await Collection('plugins')
-
-            const isNew = await Packs.findOne({ _id: this._id }).then(pack => pack ? true : false).catch(err => { console.error(err); return true })
-            if (isNew && await (await Packs.find({ community: this.community }).toArray()).length >= 25) return reject('Maximum Quantity of Plugin Packages has been reached for this Community! (25)')
 
 
             Packs.updateOne({ _id: this._id }, { $set: this }, { upsert: true })

@@ -42,7 +42,8 @@ export default function Client(): Promise<Discord.Client> {
 
                     Commands.set.data,
                     Commands.server.data,
-                    Commands.plugins.data
+                    Commands.plugins.data,
+                    Commands.config.data
 
                 ]).then(() => console.log('Registered Global Commands!'))
 
@@ -75,7 +76,7 @@ export default function Client(): Promise<Discord.Client> {
 
                         console.error(err)
 
-                        if (interaction.isAutocomplete()) interaction.respond([{name: `${path} is missing an autocomplete method!`, value: '.'}])
+                        if (interaction.isAutocomplete()) interaction.respond([{ name: `${path} is missing an autocomplete method!`, value: '.' }])
                         if (interaction.isChatInputCommand() || interaction.isButton()) interaction.reply({ content: 'This Command does not exist on the Server!', ephemeral: true })
                         else console.log(`Interaction "${interaction.id}" does not exist on the Server!`)
 
@@ -94,6 +95,11 @@ export default function Client(): Promise<Discord.Client> {
                         .then(() => console.warn(`Guild Deleted (${guild.name} - ${guild.id})`))
                         .catch(console.error)
                 })
+
+
+                //? Client Presence Update
+                function UpdatePresence() { _client.user?.setActivity({ type: Discord.ActivityType.Competing, name: `${_client.guilds.cache.size} Communities` }) }
+                setInterval(UpdatePresence, 1000 * 60 * 5), UpdatePresence()
 
             })
         } else resolve(_client)

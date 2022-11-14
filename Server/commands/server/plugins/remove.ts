@@ -1,8 +1,10 @@
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType, Guild, EmbedBuilder, SlashCommandSubcommandBuilder } from "discord.js"
+import Discord from "discord.js"
 
 import ShardManager from "@lib/classes/shard"
+
+import * as Autocomplete from "@lib/common/autocomplete"
 
 import * as Colors from '@lib/discord/colors'
 import Alert from "@lib/discord/alert"
@@ -11,7 +13,7 @@ import Alert from "@lib/discord/alert"
 
 //? Command
 
-export const data = new SlashCommandSubcommandBuilder()
+export const data = new Discord.SlashCommandSubcommandBuilder()
     .setName('remove')
     .setDescription('Remove a Package from this Server')
     .addStringOption(option => option
@@ -32,7 +34,7 @@ export const data = new SlashCommandSubcommandBuilder()
 
 //? Response
 
-export const response = async (interaction: ChatInputCommandInteraction<CacheType>) => {
+export const response = async (interaction: Discord.ChatInputCommandInteraction) => {
 
     const ShardId = interaction.options.getString('server') as string
     if (ShardId == '.') return interaction.reply({ content: 'There are no servers available.', ephemeral: true })
@@ -51,5 +53,16 @@ export const response = async (interaction: ChatInputCommandInteraction<CacheTyp
             console.error(err)
             interaction.reply({ content: `An error occurred while removing this plugin package from the server!\n\n**Details**\n\`${err}\``, ephemeral: true })
         })
+
+}
+
+
+
+//? Autocomplete
+
+export const autocomplete = async (interaction: Discord.AutocompleteInteraction) => {
+
+    if (interaction.options.getFocused(true).name == 'server') return interaction.respond(await Autocomplete.Shards(interaction.guildId as string, interaction.options.getFocused()))
+    if (interaction.options.getFocused(true).name == 'pack') return interaction.respond(await Autocomplete.PluginPacks(interaction.guildId as string, interaction.options.getFocused()))
 
 }

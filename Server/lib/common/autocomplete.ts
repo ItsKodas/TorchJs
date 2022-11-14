@@ -40,7 +40,7 @@ export const PluginPacks = async (community: string, search: string, filter?: 'e
         {
             limit: 25,
             projection: { _id: 1, name: 1 }
-        }).toArray().catch(() => []) as Shard[]
+        }).toArray().catch(() => []) as PluginPack[]
 
     return Plugins.map(choice => ({ name: `${choice.name} | ${choice._id.toString()}`, value: choice._id.toString() }))
 
@@ -64,8 +64,19 @@ export const TorchAPIPlugins = async (search: string) => {
             projection: { id: 1, name: 1, author: 1, downloads: 1 },
             sort: { downloads: -1 }
         }
-    ).toArray().catch(() => []) as Shard[]
+    ).toArray().catch(() => []) as any[]
 
     return Plugins.map((choice: any) => ({ name: `${choice.name} by ${choice.author} (${choice.downloads} downloads)`, value: choice.id }))
+
+}
+
+
+//? Configurations
+
+export const Configurations = async (community: string, search: string) => {
+
+    const Configurations = await (await Collection('configs')).find({ community, $or: [{ _id: { $regex: search, $options: 'i' } }, { name: { $regex: search, $options: 'i' } }] }, { limit: 25, projection: { _id: 1, name: 1 } }).toArray().catch(() => []) as ConfigPreset[]
+
+    return Configurations.map(choice => ({ name: `${choice.name} (${choice._id.toString()})`, value: choice._id.toString() }))
 
 }

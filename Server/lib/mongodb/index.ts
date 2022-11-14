@@ -26,7 +26,7 @@ export default function Client(): Promise<MongoClient> {
 
 //? Common Functions
 
-export function Collection(collection: 'communities' | 'mods' | 'plugins' | 'shards' | 'worlds' | 'tasks' | 'torchapi-plugins'): Promise<MongoCollection> {
+export function Collection(collection: 'communities' | 'mods' | 'plugins' | 'shards' | 'worlds' | 'configs' | 'tasks' | 'torchapi-plugins'): Promise<MongoCollection> {
     return new Promise((resolve, reject) => {
         Client()
             .then(client => resolve(client.db(Config.mongo.db).collection(collection)))

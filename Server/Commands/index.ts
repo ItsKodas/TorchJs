@@ -5,6 +5,7 @@ export * as server from './server'
 // export { default as world } from './world'
 
 export * as plugins from './plugins'
+export * as config from './config'
 
 
 

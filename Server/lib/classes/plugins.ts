@@ -29,7 +29,7 @@ export default class PluginManager implements PluginPack {
      * @returns A new Plugin Package
      */
     constructor(guildId: string, guid?: string) {
-        this._id = guid ? new ObjectId(guid) : new ObjectId()
+        this._id = ObjectId.isValid(guid) ? new ObjectId(guid) : new ObjectId()
 
         this.name = 'unknown'
         this.enabled = true

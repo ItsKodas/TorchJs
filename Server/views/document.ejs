@@ -7,11 +7,12 @@
         
         <meta name="description" content="<%= locals.description ? description : 'No Description Provided' %>" />
 
-        <link rel="stylesheet" href="/css/main.css" />
+        <link rel="stylesheet" href="/css/styles.css" />
+        <link rel="stylesheet" href="/css/scroll.css" />
     </head>
 
 
-    <body>
+    <body class="bg-slate-800">
         <%- include(`./components/${locals.component ? component : 'error'}`) %>
     </body>
 

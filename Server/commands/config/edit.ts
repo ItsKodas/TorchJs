@@ -39,7 +39,7 @@ export const response = async (interaction: Discord.ChatInputCommandInteraction)
 
     Configuration.startSession()
         .then(() => interaction.reply({ content: `${Config.url}/editor?id=${Configuration._id.toString()}&session=${Configuration.session?.id}`, ephemeral: true }))
-        .catch(err => interaction.reply({ content: `An Error occurred while starting the Session!\n\n**Details:** \`${err}\``, ephemeral: true }))
+        .catch(err => interaction.reply({ content: `An Error occurred while starting the Session!\n\n**Details:** \`${err}\`${Configuration.session ? `\n\n**Active Session:** ${Config.url}/editor?id=${Configuration._id.toString()}&session=${Configuration.session?.id}` : ''}`, ephemeral: true }))
 
 }
 

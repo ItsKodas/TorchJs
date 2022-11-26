@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 })
 
 
-app.route('/editor').get(Editor.get).post(Editor.post)
+app.route('/editor').get(Editor.get).patch(Editor.save).post(Editor.publish).delete(Editor.discard).notify(Editor.notify)
 
 
 export default app

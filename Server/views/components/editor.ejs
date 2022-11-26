@@ -1,3 +1,95 @@
-<h1><%= title %></h1>
+<link rel="stylesheet" href="/css/rainbow-border.css" />
 
-<textarea style="width: 95vw; height: 85vh"><%= data %></textarea>
+
+<div class="p-5 fixed flex top-0 left-0 right-0 z-50 bg-slate-800 bg-opacity-40 border-solid border-green-500 border-opacity-30 border-b-2 backdrop-blur-sm">
+    <h1 class="my-auto text-gray-200"><%= title %></h1>
+
+    <div class="flex space-x-3 ml-auto my-auto self-end">
+        <button title="Discard Saved Changes to this Config" onclick="Discard()" class="my-auto p-1 px-3 rounded-sm text-gray-200 bg-red-600">Discard</button>
+        <button title="Save Changes made to this file to the Session" onclick="Save()" class="my-auto p-1 px-3 rounded-sm text-gray-200 bg-green-600">Save</button>
+        <button title="Publish Changes made in this session to Live" onclick="Publish()" class="my-auto p-1 px-3 rounded-sm text-gray-200 bg-cyan-600">Publish</button>
+    </div>
+</div>
+
+
+
+<div id="editor" class="m-3 mt-20" />
+
+
+
+<script src="/js/bundle.js"></script>
+
+<script>
+    const Editor = editor.newEditor()
+
+    fetch(`/editor${window.location.search}&raw=true`)
+        .then(async res => {
+            if (!res.ok) return alert('Error loading file! (RESPONSE NOT OK)')
+
+            res.json()
+                .then(json => {
+                    if (!json.data) return alert('Error loading file! (RESPONSE NOT JSON)')
+
+                    let transaction = Editor.state.update({ changes: { from: 0, insert: json.data } })
+                    Editor.dispatch(transaction)
+                })
+        })
+
+
+
+    function Save() {
+        const Form = new FormData()
+        Form.append('data', Editor.state.doc.toString())
+
+        fetch(`/editor${window.location.search}`, { method: 'PATCH', body: Form })
+            .then(res => res.json())
+            .then(json => {
+                if (json.error) return alert(json.error)
+
+                alert('Changes have been successfully saved to the active session!')
+            })
+            .catch(err => alert('Error communicating with the server!'))
+    }
+    
+
+    function Publish() {
+        if (!confirm('Are you sure you want to publish this file and end the session?')) return
+
+        const Form = new FormData()
+        Form.append('data', Editor.state.doc.toString())
+
+        fetch(`/editor${window.location.search}`, { method: 'POST', body: Form })
+            .then(res => res.json())
+            .then(json => {
+                if (json.error) return alert(json.error)
+
+                alert('The Configuration has been successfully published!\n\nThe session will now end.')
+                window.close()
+            })
+            .catch(err => alert('Error communicating with the server!'))
+    }
+
+
+    function Discard() {
+        if (!confirm('Are you sure you want to discard the current changes and end the session?')) return
+
+        fetch(`/editor${window.location.search}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(json => {
+                if (json.error) return alert(json.error)
+
+                alert('Changes to this Configuration have been discarded!\n\nThe session will now end.')
+                window.close()
+            })
+            .catch(err => alert('Error communicating with the server!'))
+    }
+
+
+
+    setInterval(() => {
+
+        fetch(`/editor${window.location.search}`, {method: 'NOTIFY'})
+    
+    }, 10000)
+
+</script>

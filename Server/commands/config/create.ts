@@ -68,21 +68,33 @@ export const response = async (interaction: Discord.ChatInputCommandInteraction)
 
 
     if (Type == 'server') {
-        Config.save()
-            .then(() => interaction.reply({ content: 'Successfully created a new Sandbox Configuration!', ephemeral: true }))
-            .catch(() => interaction.reply({ content: 'Failed to create a new Sandbox Configuration!', ephemeral: true }))
+
     }
 
     if (Type == 'plugin') {
+        if (!interaction.options.getString('filename')) return interaction.reply({ content: 'You must provide a File Name for Plugin Configurations', ephemeral: true })
 
+        Config.type = 'plugin'
+        Config.file = interaction.options.getString('filename')
     }
 
     if (Type == 'instance') {
+        if (!interaction.options.getString('filename')) return interaction.reply({ content: 'You must provide a File Name for Instance Configurations', ephemeral: true })
 
+        Config.type = 'instance'
+        Config.file = interaction.options.getString('foldername') ? `${interaction.options.getString('foldername')}/${interaction.options.getString('filename')}` : interaction.options.getString('filename')
     }
 
     if (Type == 'world') {
+        if (!interaction.options.getString('filename')) return interaction.reply({ content: 'You must provide a File Name for Instance Configurations', ephemeral: true })
 
+        Config.type = 'world'
+        Config.file = interaction.options.getString('foldername') ? `${interaction.options.getString('foldername')}/${interaction.options.getString('filename')}` : interaction.options.getString('filename')
     }
+
+
+    Config.save()
+        .then(() => interaction.reply({ content: `Successfully created a new ${Type} Configuration!`, ephemeral: true }))
+        .catch(() => interaction.reply({ content: `Failed to create a new ${Type} Configuration!`, ephemeral: true }))
 
 }

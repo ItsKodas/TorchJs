@@ -1,14 +1,13 @@
 //? Exports
 
-export * as add from './create'
-export * as edit from './edit'
-export * as delete from './delete'
+export * as add from './add'
+export * as remove from './remove'
 
 
 
 //? Dependencies
 
-import { ChatInputCommandInteraction, CacheType, SlashCommandBuilder } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, SlashCommandSubcommandGroupBuilder } from "discord.js"
 
 import * as _subcommands from '.'
 const Subcommands: any = _subcommands
@@ -17,14 +16,12 @@ const Subcommands: any = _subcommands
 
 //? Command
 
-export const data = new SlashCommandBuilder()
-    .setName('config')
-    .setDescription('Manage and Edit Configurations for your Servers')
-    .setDMPermission(false)
-    
+export const data = new SlashCommandSubcommandGroupBuilder()
+    .setName('configurations')
+    .setDescription('Manage Configurations for this Server')
+
     .addSubcommand(Subcommands.add.data)
-    .addSubcommand(Subcommands.edit.data)
-    .addSubcommand(Subcommands.delete.data)
+    .addSubcommand(Subcommands.remove.data)
 
 
 

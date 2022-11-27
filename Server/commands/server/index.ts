@@ -7,6 +7,7 @@ export * as delete from './delete'
 export * as edit from './edit'
 
 export * as plugins from './plugins'
+export * as configurations from './configurations'
 
 
 
@@ -27,6 +28,7 @@ export const data = new SlashCommandBuilder()
     .setDMPermission(false)
 
     .addSubcommandGroup(Subcommands.plugins.data)
+    .addSubcommandGroup(Subcommands.configurations.data)
 
     .addSubcommand(Subcommands.enable.data)
     .addSubcommand(Subcommands.disable.data)

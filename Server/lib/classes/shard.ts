@@ -6,6 +6,7 @@ import { Collection } from '@lib/mongodb'
 
 
 import PluginManager from './plugins'
+import ConfigurationManager from './configuration'
 
 import { pbkdf2Sync, randomBytes } from 'crypto'
 
@@ -28,6 +29,7 @@ export default class ShardManager implements Shard {
 
     plugins: ShardPlugins[]
     mods: []
+    configurations: ShardConfigurations[]
 
 
     constructor(guildId: string, shardId: string) {
@@ -72,6 +74,7 @@ export default class ShardManager implements Shard {
 
         this.plugins = []
         this.mods = []
+        this.configurations = []
     }
 
 
@@ -95,6 +98,7 @@ export default class ShardManager implements Shard {
 
             this.plugins = Shard.plugins || _shard.plugins
             // this.mods = Shard.mods || []
+            this.configurations = Shard.configurations || _shard.configurations
 
             return resolve('Shard successfully fetched from database!')
 
@@ -152,15 +156,16 @@ export default class ShardManager implements Shard {
         })
     }
 
+
     addPluginPack(guid: string): Promise<PluginPack> {
         return new Promise(async (resolve, reject) => {
 
             const Pack = new PluginManager(this.community as string, guid)
             if (!await Pack.fetch().catch(() => false)) return reject('A plugin package with that GUID does not exist!')
 
-            if (this.plugins.find(p => p.guid == Pack._id.toString())) return reject('This server already has that plugin package added!')
+            if (this.configurations.find(c => c.guid == Pack._id.toString())) return reject('This server already has that plugin package added!')
 
-            this.plugins.push({ guid: Pack._id.toString(), name: Pack.name })
+            this.configurations.push({ guid: Pack._id.toString(), name: Pack.name })
 
             this.save()
                 .then(() => resolve(Pack))
@@ -181,6 +186,41 @@ export default class ShardManager implements Shard {
 
             this.save()
                 .then(() => resolve(Pack))
+                .catch(reject)
+
+        })
+    }
+
+
+    addConfiguration(guid: string): Promise<ConfigPreset> {
+        return new Promise(async (resolve, reject) => {
+
+            const Configuration = new ConfigurationManager(this.community as string, null, guid)
+            if (!await Configuration.fetch().catch(() => false)) return reject('A configuration with that GUID does not exist!')
+
+            if (this.configurations.find(c => c.guid == Configuration._id.toString())) return reject('This server already has that configuration added!')
+
+            this.configurations.push({ guid: Configuration._id.toString(), name: Configuration.name })
+
+            this.save()
+                .then(() => resolve(Configuration))
+                .catch(reject)
+
+        })
+    }
+
+    removeConfiguration(guid: string): Promise<ConfigPreset> {
+        return new Promise(async (resolve, reject) => {
+
+            const Configuration = new ConfigurationManager(this.community as string, null, guid)
+            if (!await Configuration.fetch().catch(() => false)) return reject('A configuration with that GUID does not exist!')
+
+            if (!this.configurations.find(c => c.guid == Configuration._id.toString())) return reject("This server does not have that configuration added!")
+
+            this.configurations.splice(this.configurations.findIndex(c => c.guid == Configuration._id.toString()), 1)
+
+            this.save()
+                .then(() => resolve(Configuration))
                 .catch(reject)
 
         })

@@ -26,6 +26,7 @@ declare global {
 
         plugins: ShardPlugins[]
         mods: ModPack[]
+        configurations: ShardConfigurations[]
     }
 
     interface ShardDiscord {
@@ -69,6 +70,11 @@ declare global {
 
 
     interface ShardPlugins {
+        guid: string
+        name: string
+    }
+
+    interface ShardConfigurations {
         guid: string
         name: string
     }

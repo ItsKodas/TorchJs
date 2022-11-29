@@ -1,32 +1,25 @@
 {
 	"compilerOptions": {
-		"target": "ES5",
-		"moduleResolution": "node",
-		
+		"jsx": "react",
+		"target": "ES6",
 		"allowJs": true,
+		"module": "commonjs",
 		"skipLibCheck": true,
-		"strict": true,
-		"forceConsistentCasingInFileNames": true,
 		"esModuleInterop": true,
-
-		"outDir": "../dist/Client",
-		"sourceMap": false,
-
+		"noImplicitAny": true,
+		"sourceMap": true,
 		"baseUrl": ".",
+		"outDir": "dist",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
 		"paths": {
-			"@lib/*": ["lib/*"],
-			"@api/*": ["api/*"],
-			"@app/*": ["app/*"]
+			"*": ["node_modules/*"],
+
+			"@lib/*": ["src/lib/*"],
+			"@app/*": ["src/app/*"],
+			"@components/*": ["src/components/*"],
+			"@api/*": ["src/api/*"],
 		}
 	},
-
-	"ts-node": {
-		"transpileOnly": true,
-		"compilerOptions": {
-			"module": "commonjs"
-		}
-	},
-
-	"include": ["**/*.ts"],
-	"exclude": ["node_modules"]
+	"include": ["src/**/*"]
 }

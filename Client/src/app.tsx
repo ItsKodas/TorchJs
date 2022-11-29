@@ -3,8 +3,11 @@
 import * as React from "react"
 import { createRoot } from "react-dom/client"
 
-import { ipcRenderer } from "electron"
 
+//? Theme
+
+import { ThemeProvider } from '@mui/material'
+import DarkTheme from './components/themes/dark'
 
 
 //? Stylesheets
@@ -15,7 +18,7 @@ import './styles/tailwind.css'
 
 //? Pages
 
-// import Setup from './pages/setup'
+import Setup from './pages/setup'
 
 
 
@@ -23,6 +26,13 @@ import './styles/tailwind.css'
 
 const Root = createRoot(document.getElementById('app'))
 
-ipcRenderer.send('config-check')
-
-Root.render(<div>Hello uwu</div>)
+// @ts-ignore
+window.api.config.exists()
+    .then((exists: boolean) => {
+        if (exists) Root.render(<h1>TO-DO</h1>)
+        else Root.render(
+            <ThemeProvider theme={DarkTheme}>
+                <Setup />
+            </ThemeProvider>
+        )
+    })

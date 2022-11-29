@@ -11,12 +11,12 @@ import { contextBridge, ContextBridge } from "electron"
 
 //? IPC
 
-import './lib/config'
+import * as Config from "./client/config"
 
 
 
 //? Bridge
 
-contextBridge.exposeInMainWorld('client', {
-    
+contextBridge.exposeInMainWorld('api', {
+    config: Config
 })
